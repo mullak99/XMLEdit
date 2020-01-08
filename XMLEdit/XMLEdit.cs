@@ -4,22 +4,53 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SimpleNotepad
+namespace XMLEdit
 {
-    public partial class SimpleNotepad : Form
+    public partial class XMLEdit : Form
     {
         List<NotepadPage> notepadPages = new List<NotepadPage>();
         List<string> tabFileNames = new List<string>();
 
-        Font _globalFont;
-        Theme _globalTheme;
+        AboutForm _aboutForm = new AboutForm();
 
-        Theme _defaultTheme = new Theme(SystemColors.WindowText, SystemColors.Window, SystemColors.ControlDarkDark, SystemColors.Control);
+        Font _defaultFont = new Font("Consolas", 10);
 
-        public SimpleNotepad()
+        Theme _defaultTheme = new Theme();
+        Theme _darkTheme = new Theme();
+        Theme _pureBlackTheme = new Theme();
+
+        public XMLEdit()
         {
             InitializeComponent();
-            _globalFont = this.Font;
+            _aboutForm.Owner = this;
+
+            #region Default Themes
+            _darkTheme.StandardTextColor = Color.White;
+            _darkTheme.StandardBackgroundColor = Color.FromArgb(30, 30, 30);
+            _darkTheme.LineNumberTextColor = Color.LightGray;
+            _darkTheme.LineNumberBackgroundColor = Color.FromArgb(60, 60, 60);
+            _darkTheme.FolderMarkerTextColor = Color.LightGray;
+            _darkTheme.FolderMarkerBackgroundColor = Color.FromArgb(60, 60, 60);
+            _darkTheme.FolderMarkerHighlightColor = Color.FromArgb(75, 75, 75);
+            _darkTheme.XmlAttributeTextColor = Color.Crimson;
+            _darkTheme.XmlEntityTextColor = Color.Crimson;
+            _darkTheme.XmlTagTextColor = Color.LightSkyBlue;
+            _darkTheme.XmlTagEndTextColor = Color.LightSkyBlue;
+            _darkTheme.UnifyBackgrounds(Color.FromArgb(30, 30, 30));
+
+            _pureBlackTheme.StandardTextColor = Color.White;
+            _pureBlackTheme.StandardBackgroundColor = Color.FromArgb(0, 0, 0);
+            _pureBlackTheme.LineNumberTextColor = Color.LightGray;
+            _pureBlackTheme.LineNumberBackgroundColor = Color.FromArgb(30, 30, 30);
+            _pureBlackTheme.FolderMarkerTextColor = Color.LightGray;
+            _pureBlackTheme.FolderMarkerBackgroundColor = Color.FromArgb(30, 30, 30);
+            _pureBlackTheme.FolderMarkerHighlightColor = Color.FromArgb(45, 45, 45);
+            _pureBlackTheme.XmlAttributeTextColor = Color.Crimson;
+            _pureBlackTheme.XmlEntityTextColor = Color.Crimson;
+            _pureBlackTheme.XmlTagTextColor = Color.LightSkyBlue;
+            _pureBlackTheme.XmlTagEndTextColor = Color.LightSkyBlue;
+            _pureBlackTheme.UnifyBackgrounds(Color.FromArgb(0, 0, 0));
+            #endregion
         }
 
         #region Methods
@@ -42,6 +73,14 @@ namespace SimpleNotepad
             {
                 tabFileNames.Add(tabFileName);
                 return tabFileName;
+            }
+        }
+
+        private void ApplyTheme(Theme theme)
+        {
+            foreach (NotepadPage npPage in notepadPages)
+            {
+                npPage.Theme = theme;
             }
         }
 
@@ -151,7 +190,7 @@ namespace SimpleNotepad
 
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NotepadPage notePadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _globalFont, _globalTheme);
+            NotepadPage notePadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _defaultFont, _defaultTheme);
             notepadPages.Add(notePadPage);
             notePadPage.Focus();
         }
@@ -162,7 +201,7 @@ namespace SimpleNotepad
             string oldTabFileName = "";
 
             if (notepadPages.Count > 0 && !String.IsNullOrWhiteSpace(notepadPages[notepadPages.Count - 1].Text))
-                notepadPage = new NotepadPage(ref TabbedNotepad, "", _globalFont, _globalTheme);
+                notepadPage = new NotepadPage(ref TabbedNotepad, "", _defaultFont, _defaultTheme);
             else
             {
                 oldTabFileName = notepadPages[notepadPages.Count - 1].FileName;
@@ -174,6 +213,10 @@ namespace SimpleNotepad
             {
                 if (!String.IsNullOrWhiteSpace(oldTabFileName)) tabFileNames.Remove(oldTabFileName);
                 notepadPages.Add(notepadPage);
+            }
+            else
+            {
+                CloseTabAt(TabbedNotepad.SelectedIndex);
             }
         }
 
@@ -202,6 +245,31 @@ namespace SimpleNotepad
             this.Close();
         }
 
+        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].Cut();
+        }
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].Copy();
+        }
+
+        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].Paste();
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].Delete();
+        }
+
+        private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].SelectAll();
+        }
+
         private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             notepadPages[TabbedNotepad.SelectedIndex].Undo();
@@ -216,67 +284,48 @@ namespace SimpleNotepad
         {
             FontDialog fontDiag = new FontDialog();
             fontDiag.ShowColor = false;
-            fontDiag.Font = _globalFont;
+            fontDiag.ShowEffects = false;
+            fontDiag.AllowScriptChange = false;
+            fontDiag.Font = _defaultFont;
+            
             DialogResult result = fontDiag.ShowDialog();
 
             if (result != DialogResult.Cancel)
             {
-                _globalFont = fontDiag.Font;
+                _defaultFont = fontDiag.Font;
 
                 foreach (NotepadPage npPage in notepadPages)
                 {
-                    npPage.Font = _globalFont;
+                    npPage.Font = _defaultFont;
                 }
             }
         }
 
         private void SetDefaultThemeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Color standardBackground = SystemColors.Window;
-            Color standardForeground = SystemColors.WindowText;
-            Color standardLineBackground = SystemColors.Control;
-            Color standardLineForeground = SystemColors.ControlDarkDark;
-
             if (sender == DefaultToolStripMenuItem)
             {
+                ApplyTheme(_defaultTheme);
+
                 DefaultToolStripMenuItem.Checked = true;
                 DarkModeToolStripMenuItem.Checked = false;
                 PureBlackModeToolStripMenuItem.Checked = false;
-
-                standardBackground = _defaultTheme.StandardBackgroundColor;
-                standardForeground = _defaultTheme.StandardTextColor;
-                standardLineBackground = _defaultTheme.AltBackgroundColor;
-                standardLineForeground = _defaultTheme.AltTextColor;
             }
             else if (sender == DarkModeToolStripMenuItem)
             {
+                ApplyTheme(_darkTheme);
+
                 DefaultToolStripMenuItem.Checked = false;
                 DarkModeToolStripMenuItem.Checked = true;
                 PureBlackModeToolStripMenuItem.Checked = false;
-
-                standardBackground = Color.FromArgb(30, 30, 30);
-                standardForeground = Color.White;
-                standardLineBackground = Color.FromArgb(60, 60, 60);
-                standardLineForeground = Color.LightGray;
             }
             else if (sender == PureBlackModeToolStripMenuItem)
             {
+                ApplyTheme(_pureBlackTheme);
+
                 DefaultToolStripMenuItem.Checked = false;
                 DarkModeToolStripMenuItem.Checked = false;
                 PureBlackModeToolStripMenuItem.Checked = true;
-
-                standardBackground = Color.FromArgb(0, 0, 0);
-                standardForeground = Color.White;
-                standardLineBackground = Color.FromArgb(30, 30, 30);
-                standardLineForeground = Color.LightGray;
-            }
-
-            _globalTheme = new Theme(standardForeground, standardBackground, standardLineForeground, standardLineBackground);
-
-            foreach (NotepadPage npPage in notepadPages)
-            {
-                npPage.Theme = _globalTheme;
-                npPage.ApplyTheme();
             }
         }
 
@@ -305,6 +354,14 @@ namespace SimpleNotepad
             }
         }
 
+        private void AboutXMLEditToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_aboutForm.Visible)
+                _aboutForm.BringToFront();
+            else
+                _aboutForm.Show();
+        }
+
         #endregion
         #region SubToolStrip
 
@@ -328,6 +385,35 @@ namespace SimpleNotepad
             SaveAsToolStripMenuItem_Click(sender, e);
         }
 
+        private void CutToolStripButton_Click(object sender, EventArgs e)
+        {
+            CutToolStripMenuItem_Click(sender, e);
+        }
+
+        private void CopyStripButton_Click(object sender, EventArgs e)
+        {
+            CopyToolStripMenuItem_Click(sender, e);
+        }
+
+        private void PasteStripButton_Click(object sender, EventArgs e)
+        {
+            PasteToolStripMenuItem_Click(sender, e);
+        }
+
+        private void UndoStripButton_Click(object sender, EventArgs e)
+        {
+            UndoToolStripMenuItem_Click(sender, e);
+        }
+
+        private void RedoStripButton_Click(object sender, EventArgs e)
+        {
+            RedoToolStripMenuItem_Click(sender, e);
+        }
+
+        private void FontToolStripButton_Click(object sender, EventArgs e)
+        {
+            FontToolStripMenuItem_Click(sender, e);
+        }
         private void CloseToolStripButton_Click(object sender, EventArgs e)
         {
             if (ModifierKeys == Keys.Shift)
@@ -344,15 +430,10 @@ namespace SimpleNotepad
                 CloseToolStripButton.ToolTipText = "Close";
         }
 
-        private void FontToolStripButton_Click(object sender, EventArgs e)
-        {
-            FontToolStripMenuItem_Click(sender, e);
-        }
-
         #endregion
         #region Misc UI
 
-        private void SimpleNotepad_Load(object sender, EventArgs e)
+        private void XMLEdit_Load(object sender, EventArgs e)
         {
             if (notepadPages.Count == 0) NewToolStripMenuItem_Click(sender, e);
         }
@@ -363,13 +444,22 @@ namespace SimpleNotepad
             {
                 if (TabbedNotepad.TabCount == 0) NewToolStripMenuItem_Click(sender, e);
 
+                char[] delimiters = new char[] { ' ', '\r', '\n' };
+
                 int textLen = notepadPages[TabbedNotepad.SelectedIndex].Text.Length;
-                int lineLen = notepadPages[TabbedNotepad.SelectedIndex].Lines.Length;
+                int lineLen = notepadPages[TabbedNotepad.SelectedIndex].Lines.Count;
+                int wordCount = notepadPages[TabbedNotepad.SelectedIndex].Text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
 
                 TextLengthLabel.Text = "Length: " + textLen;
 
                 if (lineLen > 0) LineTotalLabel.Text = "Lines: " + lineLen;
                 else LineTotalLabel.Text = "Lines: 1";
+
+                WordTotalLabel.Text = "Words: " + wordCount;
+
+                TextLengthLabel.ToolTipText = String.Format("Total characters in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, textLen);
+                LineTotalLabel.ToolTipText = String.Format("Total lines in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, lineLen);
+                WordTotalLabel.ToolTipText = String.Format("Total words in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, wordCount);
 
                 string TabTitle, TabToolTip;
                 if (notepadPages[TabbedNotepad.SelectedIndex].Saved)
@@ -384,7 +474,7 @@ namespace SimpleNotepad
                     }
 
                     TabToolTip = notepadPages[TabbedNotepad.SelectedIndex].FileName;
-                    this.Text = String.Format("{0} - SimpleNotepad", notepadPages[TabbedNotepad.SelectedIndex].FileName);
+                    this.Text = String.Format("{0} - XMLEdit", notepadPages[TabbedNotepad.SelectedIndex].FileName);
                 }
                 else
                 {
@@ -397,7 +487,7 @@ namespace SimpleNotepad
                         TabTitle = ("(*) " + notepadPages[TabbedNotepad.SelectedIndex].FileName);
                     }
                     TabToolTip = "(Unsaved) " + notepadPages[TabbedNotepad.SelectedIndex].FileName;
-                    this.Text = String.Format("(*) {0} - SimpleNotepad", notepadPages[TabbedNotepad.SelectedIndex].FileName);
+                    this.Text = String.Format("(*) {0} - XMLEdit", notepadPages[TabbedNotepad.SelectedIndex].FileName);
                 }
 
                 if (TabTitle != null && TabToolTip != null && notepadPages[TabbedNotepad.SelectedIndex].TabTitle != TabTitle || notepadPages[TabbedNotepad.SelectedIndex].TabToolTip != TabToolTip)
@@ -430,6 +520,11 @@ namespace SimpleNotepad
 
             if (!CloseAllTabs())
                 e.Cancel = true;
+            else
+            {
+                _aboutForm.Dispose();
+                this.Dispose();
+            }
         }
 
         #endregion

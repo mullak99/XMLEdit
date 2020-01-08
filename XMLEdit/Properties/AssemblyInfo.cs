@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SimpleNotepad")]
-[assembly: AssemblyDescription("A simple text editor")]
+[assembly: AssemblyTitle("XMLEdit")]
+[assembly: AssemblyDescription("A simple XML Editor")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SimpleNotepad")]
-[assembly: AssemblyCopyright("Apache 2.0 | mullak99 - 2019")]
+[assembly: AssemblyCompany("mullak99")]
+[assembly: AssemblyProduct("XMLEdit")]
+[assembly: AssemblyCopyright("Apache 2.0 | mullak99 - 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
