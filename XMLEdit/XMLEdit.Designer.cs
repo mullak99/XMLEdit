@@ -61,7 +61,6 @@
             this.DefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DarkModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PureBlackModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutXMLEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStrip = new System.Windows.Forms.ToolStrip();
@@ -70,6 +69,7 @@
             this.LineTotalLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.EncodingLabel = new System.Windows.Forms.ToolStripLabel();
+            this.WordTotalLabel = new System.Windows.Forms.ToolStripLabel();
             this.TopToolStrip = new System.Windows.Forms.ToolStrip();
             this.NewToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.OpenToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -87,8 +87,6 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
-            this.dynamicToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.WordTotalLabel = new System.Windows.Forms.ToolStripLabel();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -102,7 +100,6 @@
             this.editToolStripMenuItem,
             this.formatToolStripMenuItem,
             this.settingsToolStripMenuItem,
-            this.tabsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
@@ -367,12 +364,6 @@
             this.PureBlackModeToolStripMenuItem.Text = "Pure-Black Mode";
             this.PureBlackModeToolStripMenuItem.Click += new System.EventHandler(this.SetDefaultThemeToolStripMenuItem_Click);
             // 
-            // tabsToolStripMenuItem
-            // 
-            this.tabsToolStripMenuItem.Name = "tabsToolStripMenuItem";
-            this.tabsToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
-            this.tabsToolStripMenuItem.Text = "Tabs";
-            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -436,6 +427,12 @@
             this.EncodingLabel.Name = "EncodingLabel";
             this.EncodingLabel.Size = new System.Drawing.Size(38, 22);
             this.EncodingLabel.Text = "UTF-8";
+            // 
+            // WordTotalLabel
+            // 
+            this.WordTotalLabel.Name = "WordTotalLabel";
+            this.WordTotalLabel.Size = new System.Drawing.Size(53, 22);
+            this.WordTotalLabel.Text = "Words: 0";
             // 
             // TopToolStrip
             // 
@@ -615,12 +612,6 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
-            // WordTotalLabel
-            // 
-            this.WordTotalLabel.Name = "WordTotalLabel";
-            this.WordTotalLabel.Size = new System.Drawing.Size(53, 22);
-            this.WordTotalLabel.Text = "Words: 0";
-            // 
             // XMLEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -695,7 +686,6 @@
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tabsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutXMLEditToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
@@ -705,7 +695,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripButton UndoStripButton;
         private System.Windows.Forms.ToolStripButton RedoStripButton;
-        private System.Windows.Forms.ToolTip dynamicToolTip;
         private System.Windows.Forms.ToolStripLabel WordTotalLabel;
     }
 }

@@ -93,9 +93,15 @@ namespace XMLEdit
 
             notepadPages.RemoveAt(index);
             TabbedNotepad.TabPages.RemoveAt(index);
-            tabFileNames.Remove(fileName);
+            tabFileNames.Remove(fileName);            
 
             if (TabbedNotepad.TabCount > 0) TabbedNotepad.SelectedIndex = (TabbedNotepad.TabCount - 1);
+        }
+
+        private void AddTab(NotepadPage notepadPage)
+        {
+            notepadPages.Add(notepadPage);
+            notepadPage.Focus();
         }
 
         private bool CloseTabAt(int index)
@@ -143,9 +149,7 @@ namespace XMLEdit
             foreach (NotepadPage npPage in tempPages)
             {
                 if (!CloseTabAt(notepadPages.IndexOf(npPage)) && !npPage.Saved)
-                {
                     didAllClose = false;
-                }
             }
             return didAllClose;
         }
@@ -190,9 +194,8 @@ namespace XMLEdit
 
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NotepadPage notePadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _defaultFont, _defaultTheme);
-            notepadPages.Add(notePadPage);
-            notePadPage.Focus();
+            NotepadPage notepadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _defaultFont, _defaultTheme);
+            AddTab(notepadPage);
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -212,12 +215,9 @@ namespace XMLEdit
             if (opened)
             {
                 if (!String.IsNullOrWhiteSpace(oldTabFileName)) tabFileNames.Remove(oldTabFileName);
-                notepadPages.Add(notepadPage);
+                AddTab(notepadPage);
             }
-            else
-            {
-                CloseTabAt(TabbedNotepad.SelectedIndex);
-            }
+            else CloseTabAt(TabbedNotepad.SelectedIndex);
         }
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -507,7 +507,6 @@ namespace XMLEdit
                     SetEncodingToolStripMenuItem_Click(ASCIIToolStripMenuItem, e);
                 else if (notepadPages[TabbedNotepad.SelectedIndex].Encoding == Encoding.UTF8 && !UTF8ToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(UTF8ToolStripMenuItem, e);
-
             }
             catch { }
         }
