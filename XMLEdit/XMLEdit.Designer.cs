@@ -87,6 +87,8 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.ZoomLevel = new System.Windows.Forms.ToolStripButton();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -103,7 +105,7 @@
             this.helpToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(800, 24);
+            this.MenuStrip.Size = new System.Drawing.Size(880, 24);
             this.MenuStrip.TabIndex = 0;
             this.MenuStrip.Text = "menuStrip1";
             // 
@@ -375,7 +377,7 @@
             // aboutXMLEditToolStripMenuItem
             // 
             this.aboutXMLEditToolStripMenuItem.Name = "aboutXMLEditToolStripMenuItem";
-            this.aboutXMLEditToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutXMLEditToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.aboutXMLEditToolStripMenuItem.Text = "About XMLEdit";
             this.aboutXMLEditToolStripMenuItem.Click += new System.EventHandler(this.AboutXMLEditToolStripMenuItem_Click);
             // 
@@ -390,11 +392,13 @@
             this.LineTotalLabel,
             this.toolStripSeparator2,
             this.EncodingLabel,
-            this.WordTotalLabel});
-            this.BottomToolStrip.Location = new System.Drawing.Point(0, 425);
+            this.WordTotalLabel,
+            this.toolStripSeparator9,
+            this.ZoomLevel});
+            this.BottomToolStrip.Location = new System.Drawing.Point(0, 458);
             this.BottomToolStrip.Name = "BottomToolStrip";
             this.BottomToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.BottomToolStrip.Size = new System.Drawing.Size(800, 25);
+            this.BottomToolStrip.Size = new System.Drawing.Size(880, 25);
             this.BottomToolStrip.TabIndex = 3;
             this.BottomToolStrip.Text = "toolStrip2";
             // 
@@ -457,7 +461,7 @@
             this.TopToolStrip.Location = new System.Drawing.Point(0, 24);
             this.TopToolStrip.Name = "TopToolStrip";
             this.TopToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.TopToolStrip.Size = new System.Drawing.Size(800, 25);
+            this.TopToolStrip.Size = new System.Drawing.Size(880, 25);
             this.TopToolStrip.TabIndex = 5;
             this.TopToolStrip.Text = "toolStrip2";
             // 
@@ -603,7 +607,7 @@
             this.TabbedNotepad.Padding = new System.Drawing.Point(0, 0);
             this.TabbedNotepad.SelectedIndex = 0;
             this.TabbedNotepad.ShowToolTips = true;
-            this.TabbedNotepad.Size = new System.Drawing.Size(800, 376);
+            this.TabbedNotepad.Size = new System.Drawing.Size(880, 409);
             this.TabbedNotepad.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.TabbedNotepad.TabIndex = 6;
             this.TabbedNotepad.TabStop = false;
@@ -612,11 +616,29 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+            // 
+            // ZoomLevel
+            // 
+            this.ZoomLevel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.ZoomLevel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ZoomLevel.Image = ((System.Drawing.Image)(resources.GetObject("ZoomLevel.Image")));
+            this.ZoomLevel.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ZoomLevel.Name = "ZoomLevel";
+            this.ZoomLevel.Size = new System.Drawing.Size(77, 22);
+            this.ZoomLevel.Text = "Zoom: 100%";
+            this.ZoomLevel.ToolTipText = "Reset Zoom to 100%";
+            this.ZoomLevel.Click += new System.EventHandler(this.ZoomLevel_Click);
+            // 
             // XMLEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(880, 483);
             this.Controls.Add(this.TabbedNotepad);
             this.Controls.Add(this.TopToolStrip);
             this.Controls.Add(this.MenuStrip);
@@ -696,6 +718,8 @@
         private System.Windows.Forms.ToolStripButton UndoStripButton;
         private System.Windows.Forms.ToolStripButton RedoStripButton;
         private System.Windows.Forms.ToolStripLabel WordTotalLabel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+        private System.Windows.Forms.ToolStripButton ZoomLevel;
     }
 }
 

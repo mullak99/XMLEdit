@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ScintillaNET;
+using AutocompleteMenuNS;
 
 namespace XMLEdit
 {
@@ -12,6 +16,7 @@ namespace XMLEdit
         private TabControl _tabControl;
         private TabPage _tabPage;
         private Scintilla _scintillaText;
+        private AutocompleteMenu _autocompleteMenu = new AutocompleteMenu();
         private Encoding _textEncoding = Encoding.UTF8;
         private Theme _theme = null;
         private Font _font = null;
@@ -56,6 +61,15 @@ namespace XMLEdit
             _tabControl.SelectedTab = _tabPage;
             _tabControl.Refresh();
 
+            _autocompleteMenu.TargetControlWrapper = new ScintillaWrapper(_scintillaText);
+
+            _autocompleteMenu.Items = new string[] { "mullak99", "test" };
+            _autocompleteMenu.SetAutocompleteItems(new DynamicCollection(_scintillaText));
+            _autocompleteMenu.AppearInterval = 1000;
+            _autocompleteMenu.AllowsTabKey = true;
+
+            _scintillaText.UpdateUI += NotepadPage_UpdateUI;
+
             Focus();
         }
 
@@ -84,6 +98,7 @@ namespace XMLEdit
 
             // Show line numbers
             _scintillaText.Margins[0].Width = 25;
+            _scintillaText.Margins[0].Type = MarginType.Number;
 
             // Enable folding
             _scintillaText.SetProperty("fold", "1");
@@ -128,6 +143,8 @@ namespace XMLEdit
             _scintillaText.Styles[Style.Default].ForeColor = theme.StandardTextColor;
             _scintillaText.Styles[Style.Default].BackColor = theme.StandardBackgroundColor;
 
+            _scintillaText.CaretForeColor = theme.StandardTextColor;
+
             _scintillaText.StyleClearAll();
 
             _scintillaText.Styles[Style.LineNumber].ForeColor = theme.LineNumberTextColor;
@@ -154,8 +171,24 @@ namespace XMLEdit
             _scintillaText.Styles[Style.Xml.SingleString].ForeColor = theme.XmlSingleStringTextColor;
             _scintillaText.Styles[Style.Xml.SingleString].BackColor = theme.XmlSingleStringBackgroundColor;
 
+            _scintillaText.Styles[Style.BraceLight].ForeColor = theme.BraceGoodColor;
+            _scintillaText.Styles[Style.BraceBad].ForeColor = theme.BraceGoodColor;
+
             _scintillaText.SetFoldMarginHighlightColor(true, theme.FolderMarkerHighlightColor);
             _scintillaText.SetFoldMarginColor(true, theme.FolderMarkerBackgroundColor);
+
+            _scintillaText.SetSelectionBackColor(true, theme.SelectionColor);
+
+            Colors autoCompleteColors = new Colors();
+
+            autoCompleteColors.BackColor = theme.LineNumberBackgroundColor;
+            autoCompleteColors.ForeColor = theme.StandardTextColor;
+            autoCompleteColors.HighlightingColor = theme.BraceGoodColor;
+            autoCompleteColors.SelectedBackColor = theme.SelectionColor;
+            autoCompleteColors.SelectedBackColor2 = theme.StandardBackgroundColor;
+            autoCompleteColors.SelectedForeColor = theme.StandardTextColor;
+
+            _autocompleteMenu.Colors = autoCompleteColors;
         }
 
         public void ResetTheme()
@@ -233,6 +266,12 @@ namespace XMLEdit
         public string SelectedText
         {
             get { return _scintillaText.SelectedText; }
+        }
+
+        public int Zoom
+        {
+            get { return _scintillaText.Zoom; }
+            set { _scintillaText.Zoom = value; }
         }
 
         public void Cut()
@@ -353,13 +392,65 @@ namespace XMLEdit
             }
             return false;
         }
+
+        private static bool IsBrace(int c)
+        {
+            switch (c)
+            {
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '{':
+                case '}':
+                case '<':
+                case '>':
+                    return true;
+            }
+            return false;
+        }
+
+        int lastCaretPos = 0;
+
+        private void NotepadPage_UpdateUI(object sender, UpdateUIEventArgs e)
+        {
+            // Has the caret changed position?
+            var caretPos = _scintillaText.CurrentPosition;
+            if (lastCaretPos != caretPos)
+            {
+                lastCaretPos = caretPos;
+                var bracePos1 = -1;
+                var bracePos2 = -1;
+
+                // Is there a brace to the left or right?
+                if (caretPos > 0 && IsBrace(_scintillaText.GetCharAt(caretPos - 1)))
+                    bracePos1 = (caretPos - 1);
+                else if (IsBrace(_scintillaText.GetCharAt(caretPos)))
+                    bracePos1 = caretPos;
+
+                if (bracePos1 >= 0)
+                {
+                    // Find the matching brace
+                    bracePos2 = _scintillaText.BraceMatch(bracePos1);
+                    if (bracePos2 == Scintilla.InvalidPosition)
+                        _scintillaText.BraceBadLight(bracePos1);
+                    else
+                        _scintillaText.BraceHighlight(bracePos1, bracePos2);
+                }
+                else
+                {
+                    // Turn off brace matching
+                    _scintillaText.BraceHighlight(Scintilla.InvalidPosition, Scintilla.InvalidPosition);
+                }
+            }
+        }
     }
 
     public class Theme
     {
         private Color _standardText, _standardBack, _lineNumText, _lineNumBack, _folderMarkerText, _folderMarkerBack, _folderMarkerHigh, _xmlAttFore, _xmlAttBack,
             _xmlEntFore, _xmlEntBack, _xmlComFore, _xmlComBack, _xmlTagFore, _xmlTagBack, _xmlTagEndFore, _xmlTagEndBack, _xmlDsFore, _xmlDsBack, 
-            _xmlSsFore, _xmlSsBack;
+            _xmlSsFore, _xmlSsBack, _braceGood, _braceBad, _selection;
 
         public Theme()
         {
@@ -373,10 +464,10 @@ namespace XMLEdit
             _folderMarkerBack = Color.FromArgb(255, 255, 255);
             _folderMarkerHigh = Color.FromArgb(240, 240, 240);
 
-            _xmlAttFore = Color.Red;
+            _xmlAttFore = Color.DarkCyan;
             _xmlAttBack = Color.White;
 
-            _xmlEntFore = Color.Red;
+            _xmlEntFore = Color.DarkCyan;
             _xmlEntBack = Color.White;
 
             _xmlComFore = Color.Green;
@@ -393,6 +484,11 @@ namespace XMLEdit
 
             _xmlSsFore = Color.DeepPink;
             _xmlSsBack = Color.White;
+
+            _braceGood = Color.MediumSeaGreen;
+            _braceBad = Color.Red;
+
+            _selection = Color.FromArgb(51, 153, 255);
         }
 
         public void UnifyBackgrounds(Color color)
@@ -417,6 +513,12 @@ namespace XMLEdit
         {
             get { return _standardBack; }
             set { _standardBack = value; }
+        }
+
+        public Color SelectionColor
+        {
+            get { return _selection; }
+            set { _selection = value; }
         }
 
         public Color LineNumberTextColor
@@ -531,6 +633,50 @@ namespace XMLEdit
         {
             get { return _xmlSsBack; }
             set { _xmlSsBack = value; }
+        }
+
+        public Color BraceGoodColor
+        {
+            get { return _braceGood; }
+            set { _braceGood = value; }
+        }
+
+        public Color BraceBadColor
+        {
+            get { return _braceBad; }
+            set { _braceBad = value; }
+        }
+    }
+
+    internal class DynamicCollection : IEnumerable<AutocompleteItem>
+    {
+        private Scintilla tb;
+
+        public DynamicCollection(Scintilla tb)
+        {
+            this.tb = tb;
+        }
+
+        public IEnumerator<AutocompleteItem> GetEnumerator()
+        {
+            return BuildList().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        private IEnumerable<AutocompleteItem> BuildList()
+        {
+            //find all words of the text
+            var words = new Dictionary<string, string>();
+            foreach (Match m in Regex.Matches(tb.Text, @"\b\w+\b"))
+                words[m.Value] = m.Value;
+
+            //return autocomplete items
+            foreach (var word in words.Keys)
+                yield return new AutocompleteItem(word);
         }
     }
 }

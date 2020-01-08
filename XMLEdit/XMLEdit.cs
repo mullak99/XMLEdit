@@ -19,6 +19,9 @@ namespace XMLEdit
         Theme _darkTheme = new Theme();
         Theme _pureBlackTheme = new Theme();
 
+        Font _globalFont;
+        Theme _globalTheme;
+
         public XMLEdit()
         {
             InitializeComponent();
@@ -32,10 +35,12 @@ namespace XMLEdit
             _darkTheme.FolderMarkerTextColor = Color.LightGray;
             _darkTheme.FolderMarkerBackgroundColor = Color.FromArgb(60, 60, 60);
             _darkTheme.FolderMarkerHighlightColor = Color.FromArgb(75, 75, 75);
-            _darkTheme.XmlAttributeTextColor = Color.Crimson;
-            _darkTheme.XmlEntityTextColor = Color.Crimson;
+            _darkTheme.XmlAttributeTextColor = Color.Aqua;
+            _darkTheme.XmlEntityTextColor = Color.Aqua;
             _darkTheme.XmlTagTextColor = Color.LightSkyBlue;
             _darkTheme.XmlTagEndTextColor = Color.LightSkyBlue;
+            _darkTheme.BraceGoodColor = Color.Lime;
+            _darkTheme.BraceBadColor = Color.Crimson;
             _darkTheme.UnifyBackgrounds(Color.FromArgb(30, 30, 30));
 
             _pureBlackTheme.StandardTextColor = Color.White;
@@ -45,12 +50,17 @@ namespace XMLEdit
             _pureBlackTheme.FolderMarkerTextColor = Color.LightGray;
             _pureBlackTheme.FolderMarkerBackgroundColor = Color.FromArgb(30, 30, 30);
             _pureBlackTheme.FolderMarkerHighlightColor = Color.FromArgb(45, 45, 45);
-            _pureBlackTheme.XmlAttributeTextColor = Color.Crimson;
-            _pureBlackTheme.XmlEntityTextColor = Color.Crimson;
+            _pureBlackTheme.XmlAttributeTextColor = Color.Aqua;
+            _pureBlackTheme.XmlEntityTextColor = Color.Aqua;
             _pureBlackTheme.XmlTagTextColor = Color.LightSkyBlue;
             _pureBlackTheme.XmlTagEndTextColor = Color.LightSkyBlue;
+            _pureBlackTheme.BraceGoodColor = Color.Lime;
+            _pureBlackTheme.BraceBadColor = Color.Crimson;
             _pureBlackTheme.UnifyBackgrounds(Color.FromArgb(0, 0, 0));
             #endregion
+
+            _globalFont = _defaultFont;
+            _globalTheme = _defaultTheme;
         }
 
         #region Methods
@@ -194,7 +204,7 @@ namespace XMLEdit
 
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NotepadPage notepadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _defaultFont, _defaultTheme);
+            NotepadPage notepadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _globalFont, _globalTheme);
             AddTab(notepadPage);
         }
 
@@ -204,7 +214,7 @@ namespace XMLEdit
             string oldTabFileName = "";
 
             if (notepadPages.Count > 0 && !String.IsNullOrWhiteSpace(notepadPages[notepadPages.Count - 1].Text))
-                notepadPage = new NotepadPage(ref TabbedNotepad, "", _defaultFont, _defaultTheme);
+                notepadPage = new NotepadPage(ref TabbedNotepad, "", _globalFont, _globalTheme);
             else
             {
                 oldTabFileName = notepadPages[notepadPages.Count - 1].FileName;
@@ -292,20 +302,25 @@ namespace XMLEdit
 
             if (result != DialogResult.Cancel)
             {
-                _defaultFont = fontDiag.Font;
+                _globalFont = fontDiag.Font;
 
                 foreach (NotepadPage npPage in notepadPages)
                 {
-                    npPage.Font = _defaultFont;
+                    npPage.Font = _globalFont;
                 }
             }
+        }
+
+        private void ZoomLevel_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].Zoom = 0;
         }
 
         private void SetDefaultThemeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (sender == DefaultToolStripMenuItem)
             {
-                ApplyTheme(_defaultTheme);
+                _globalTheme = _defaultTheme;
 
                 DefaultToolStripMenuItem.Checked = true;
                 DarkModeToolStripMenuItem.Checked = false;
@@ -313,7 +328,7 @@ namespace XMLEdit
             }
             else if (sender == DarkModeToolStripMenuItem)
             {
-                ApplyTheme(_darkTheme);
+                _globalTheme = _darkTheme;
 
                 DefaultToolStripMenuItem.Checked = false;
                 DarkModeToolStripMenuItem.Checked = true;
@@ -321,12 +336,14 @@ namespace XMLEdit
             }
             else if (sender == PureBlackModeToolStripMenuItem)
             {
-                ApplyTheme(_pureBlackTheme);
+                _globalTheme = _pureBlackTheme;
 
                 DefaultToolStripMenuItem.Checked = false;
                 DarkModeToolStripMenuItem.Checked = false;
                 PureBlackModeToolStripMenuItem.Checked = true;
             }
+
+            ApplyTheme(_globalTheme);
         }
 
         private void SetEncodingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -449,6 +466,7 @@ namespace XMLEdit
                 int textLen = notepadPages[TabbedNotepad.SelectedIndex].Text.Length;
                 int lineLen = notepadPages[TabbedNotepad.SelectedIndex].Lines.Count;
                 int wordCount = notepadPages[TabbedNotepad.SelectedIndex].Text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
+                int zoom = notepadPages[TabbedNotepad.SelectedIndex].Zoom;
 
                 TextLengthLabel.Text = "Length: " + textLen;
 
@@ -460,6 +478,11 @@ namespace XMLEdit
                 TextLengthLabel.ToolTipText = String.Format("Total characters in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, textLen);
                 LineTotalLabel.ToolTipText = String.Format("Total lines in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, lineLen);
                 WordTotalLabel.ToolTipText = String.Format("Total words in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, wordCount);
+
+                if (zoom > -10)
+                    ZoomLevel.Text = String.Format("Zoom: {0}0%", (10 + zoom));
+                else
+                    ZoomLevel.Text = "Zoom: 0%";
 
                 string TabTitle, TabToolTip;
                 if (notepadPages[TabbedNotepad.SelectedIndex].Saved)
