@@ -22,5 +22,40 @@ namespace XMLEdit.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("default")]
+        public string selectedTheme {
+            get {
+                return ((string)(this["selectedTheme"]));
+            }
+            set {
+                this["selectedTheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection openFiles {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["openFiles"]));
+            }
+            set {
+                this["openFiles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("896, 522")]
+        public global::System.Drawing.Size appSize {
+            get {
+                return ((global::System.Drawing.Size)(this["appSize"]));
+            }
+            set {
+                this["appSize"] = value;
+            }
+        }
     }
 }

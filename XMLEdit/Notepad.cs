@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ScintillaNET;
 using AutocompleteMenuNS;
+using ScintillaNET_FindReplaceDialog;
 
 namespace XMLEdit
 {
@@ -17,6 +17,7 @@ namespace XMLEdit
         private TabPage _tabPage;
         private Scintilla _scintillaText;
         private AutocompleteMenu _autocompleteMenu = new AutocompleteMenu();
+        private FindReplace _findDiag;
         private Encoding _textEncoding = Encoding.UTF8;
         private Theme _theme = null;
         private Font _font = null;
@@ -62,15 +63,46 @@ namespace XMLEdit
             _tabControl.Refresh();
 
             _autocompleteMenu.TargetControlWrapper = new ScintillaWrapper(_scintillaText);
-
-            _autocompleteMenu.Items = new string[] { "mullak99", "test" };
             _autocompleteMenu.SetAutocompleteItems(new DynamicCollection(_scintillaText));
             _autocompleteMenu.AppearInterval = 1000;
             _autocompleteMenu.AllowsTabKey = true;
 
+            _findDiag = new FindReplace(_scintillaText);
+
             _scintillaText.UpdateUI += NotepadPage_UpdateUI;
 
             Focus();
+        }
+
+        public void ShowFinder()
+        {
+            _findDiag.ShowFind();
+        }
+
+        public void ShowReplace()
+        {
+            _findDiag.ShowReplace();
+        }
+
+        public void ShowIncSearch()
+        {
+            _findDiag.ShowIncrementalSearch();
+        }
+
+        public void ShowGoTo()
+        {
+            GoTo goTo = new GoTo(_scintillaText);
+            goTo.ShowGoToDialog();
+        }
+
+        public void FindNext()
+        {
+            _findDiag.Window.FindNext();
+        }
+
+        public void FindPrev()
+        {
+            _findDiag.Window.FindPrevious();
         }
 
         private void UpdateFilePath()
@@ -373,9 +405,17 @@ namespace XMLEdit
             openFileDiag.Filter = "XML Files (*.xml)|*.xml";
 
             if (openFileDiag.ShowDialog() == DialogResult.OK)
+                return Open(openFileDiag.FileName);
+
+            return false;
+        }
+
+        public bool Open(string path)
+        {
+            if (Path.GetExtension(path) == ".xml")
             {
-                _fileName = openFileDiag.SafeFileName;
-                _filePath = openFileDiag.FileName;
+                _fileName = Path.GetFileName(path);
+                _filePath = Path.GetFullPath(path);
                 TabTitle = _fileName;
                 TabToolTip = _filePath;
 

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -61,9 +64,81 @@ namespace XMLEdit
 
             _globalFont = _defaultFont;
             _globalTheme = _defaultTheme;
+
+            Init();
+        }
+
+        public XMLEdit(string[] paths) : this()
+        {
+            foreach (string path in paths)
+            {
+                OpenTab(path);
+            }
         }
 
         #region Methods
+
+        private void Init()
+        {
+            Properties.Settings.Default.Upgrade();
+
+            this.Size = Properties.Settings.Default.appSize;
+            SelectTheme(Properties.Settings.Default.selectedTheme);
+            OpenCachedTabs();
+        }
+
+        private void OpenCachedTabs()
+        {
+            try
+            {
+                StringCollection paths = Properties.Settings.Default.openFiles;
+
+                string[] cachedTabs = paths.Cast<string>().ToArray();
+
+                foreach (string tab in cachedTabs)
+                    OpenTab(tab, true);
+            }
+            catch { }
+        }
+
+        private void SelectTheme(string themeName)
+        {
+            if (themeName.ToLower() == "dark")
+            {
+                _globalTheme = _darkTheme;
+
+                DefaultToolStripMenuItem.Checked = false;
+                DarkModeToolStripMenuItem.Checked = true;
+                PureBlackModeToolStripMenuItem.Checked = false;
+
+                Properties.Settings.Default.selectedTheme = "dark";
+            }
+            else if (themeName.ToLower() == "pureblack")
+            {
+                _globalTheme = _pureBlackTheme;
+
+                DefaultToolStripMenuItem.Checked = false;
+                DarkModeToolStripMenuItem.Checked = false;
+                PureBlackModeToolStripMenuItem.Checked = true;
+
+                Properties.Settings.Default.selectedTheme = "pureblack";
+            }
+            else
+            {
+                _globalTheme = _defaultTheme;
+
+                DefaultToolStripMenuItem.Checked = true;
+                DarkModeToolStripMenuItem.Checked = false;
+                PureBlackModeToolStripMenuItem.Checked = false;
+
+                Properties.Settings.Default.selectedTheme = "default";
+            }
+
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+
+            ApplyTheme(_globalTheme);
+        }
 
         private string GetNewFileName(Int64 newFileNameIntStart = -1)
         {
@@ -94,6 +169,17 @@ namespace XMLEdit
             }
         }
 
+        private void CacheOpenFiles()
+        {
+            StringCollection paths = new StringCollection();
+            paths.AddRange(notepadPages.Select(i => i.FilePath).ToArray());
+
+            Properties.Settings.Default.openFiles = paths;
+
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+        }
+
         #endregion
         #region Tabs
 
@@ -103,15 +189,49 @@ namespace XMLEdit
 
             notepadPages.RemoveAt(index);
             TabbedNotepad.TabPages.RemoveAt(index);
-            tabFileNames.Remove(fileName);            
+            tabFileNames.Remove(fileName);
+            CacheOpenFiles();
 
             if (TabbedNotepad.TabCount > 0) TabbedNotepad.SelectedIndex = (TabbedNotepad.TabCount - 1);
         }
 
-        private void AddTab(NotepadPage notepadPage)
+        private void AddTab(NotepadPage notepadPage, bool skipAdd = false)
         {
-            notepadPages.Add(notepadPage);
+            if (!skipAdd) notepadPages.Add(notepadPage);
             notepadPage.Focus();
+
+            CacheOpenFiles();
+        }
+
+        private void OpenTab(string path = null, bool requirePath = false)
+        {
+            if ((!String.IsNullOrWhiteSpace(path) && File.Exists(path)) || String.IsNullOrWhiteSpace(path) && !requirePath)
+            {
+                NotepadPage notepadPage;
+                string oldTabFileName = "";
+                bool skipAdd = false;
+
+                if ((notepadPages.Count > 0 && !String.IsNullOrWhiteSpace(notepadPages[TabbedNotepad.SelectedIndex].Text)) || notepadPages.Count == 0)
+                    notepadPage = new NotepadPage(ref TabbedNotepad, "", _globalFont, _globalTheme);
+                else
+                {
+                    oldTabFileName = notepadPages[notepadPages.Count - 1].FileName;
+                    notepadPage = notepadPages[notepadPages.Count - 1];
+                    skipAdd = true;
+                }
+
+                bool opened;
+
+                if (String.IsNullOrWhiteSpace(path)) opened = notepadPage.Open();
+                else opened = notepadPage.Open(path);
+
+                if (opened)
+                {
+                    if (!String.IsNullOrWhiteSpace(oldTabFileName)) tabFileNames.Remove(oldTabFileName);
+                    AddTab(notepadPage, skipAdd);
+                }
+                else CloseTabAt(TabbedNotepad.SelectedIndex);
+            }
         }
 
         private bool CloseTabAt(int index)
@@ -210,24 +330,7 @@ namespace XMLEdit
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NotepadPage notepadPage;
-            string oldTabFileName = "";
-
-            if (notepadPages.Count > 0 && !String.IsNullOrWhiteSpace(notepadPages[notepadPages.Count - 1].Text))
-                notepadPage = new NotepadPage(ref TabbedNotepad, "", _globalFont, _globalTheme);
-            else
-            {
-                oldTabFileName = notepadPages[notepadPages.Count - 1].FileName;
-                notepadPage = notepadPages[notepadPages.Count - 1];
-            }
-
-            bool opened = notepadPage.Open();
-            if (opened)
-            {
-                if (!String.IsNullOrWhiteSpace(oldTabFileName)) tabFileNames.Remove(oldTabFileName);
-                AddTab(notepadPage);
-            }
-            else CloseTabAt(TabbedNotepad.SelectedIndex);
+            OpenTab();
         }
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -253,6 +356,36 @@ namespace XMLEdit
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].ShowFinder();
+        }
+
+        private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].FindNext();
+        }
+
+        private void findPreviousToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].FindPrev();
+        }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].ShowReplace();
+        }
+
+        private void incrementalSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].ShowIncSearch();
+        }
+
+        private void goToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notepadPages[TabbedNotepad.SelectedIndex].ShowGoTo();
         }
 
         private void CutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -296,7 +429,7 @@ namespace XMLEdit
             fontDiag.ShowColor = false;
             fontDiag.ShowEffects = false;
             fontDiag.AllowScriptChange = false;
-            fontDiag.Font = _defaultFont;
+            fontDiag.Font = _globalFont;
             
             DialogResult result = fontDiag.ShowDialog();
 
@@ -319,31 +452,11 @@ namespace XMLEdit
         private void SetDefaultThemeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (sender == DefaultToolStripMenuItem)
-            {
-                _globalTheme = _defaultTheme;
-
-                DefaultToolStripMenuItem.Checked = true;
-                DarkModeToolStripMenuItem.Checked = false;
-                PureBlackModeToolStripMenuItem.Checked = false;
-            }
+                SelectTheme("default");
             else if (sender == DarkModeToolStripMenuItem)
-            {
-                _globalTheme = _darkTheme;
-
-                DefaultToolStripMenuItem.Checked = false;
-                DarkModeToolStripMenuItem.Checked = true;
-                PureBlackModeToolStripMenuItem.Checked = false;
-            }
+                SelectTheme("dark");
             else if (sender == PureBlackModeToolStripMenuItem)
-            {
-                _globalTheme = _pureBlackTheme;
-
-                DefaultToolStripMenuItem.Checked = false;
-                DarkModeToolStripMenuItem.Checked = false;
-                PureBlackModeToolStripMenuItem.Checked = true;
-            }
-
-            ApplyTheme(_globalTheme);
+                SelectTheme("pureblack");
         }
 
         private void SetEncodingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -450,6 +563,14 @@ namespace XMLEdit
         #endregion
         #region Misc UI
 
+        private void XMLEdit_SizeChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.appSize = this.Size;
+
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+        }
+
         private void XMLEdit_Load(object sender, EventArgs e)
         {
             if (notepadPages.Count == 0) NewToolStripMenuItem_Click(sender, e);
@@ -540,13 +661,8 @@ namespace XMLEdit
 
             if (e.CloseReason == CloseReason.WindowsShutDown) return;
 
-            if (!CloseAllTabs())
-                e.Cancel = true;
-            else
-            {
-                _aboutForm.Dispose();
-                this.Dispose();
-            }
+            _aboutForm.Dispose();
+            this.Dispose();
         }
 
         #endregion

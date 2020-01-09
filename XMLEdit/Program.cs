@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -7,14 +9,25 @@ namespace XMLEdit
     static class Program
     {
         private const bool IsPreReleaseBuild = true;
-        private const string PreReleaseTag = "DEV_200108";
+        private const string PreReleaseTag = "DEV_200109-1";
                
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            List<string> filePaths = new List<string>();
+
+            foreach (string arg in args)
+            {
+                if (File.Exists(arg) && Path.GetExtension(arg) == ".xml")
+                {
+                    filePaths.Add(arg);
+                }
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new XMLEdit());
+            if (filePaths.Count == 0) Application.Run(new XMLEdit());
+            else Application.Run(new XMLEdit(filePaths.ToArray()));
         }
 
         /// <summary>

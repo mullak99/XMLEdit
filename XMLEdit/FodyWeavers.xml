@@ -3,6 +3,8 @@
   <Costura>
     <IncludeAssemblies>
       ScintillaNET
+      AutocompleteMenu-ScintillaNET
+      ScintillaNET_FindReplaceDialog
     </IncludeAssemblies>
   </Costura>
 </Weavers>

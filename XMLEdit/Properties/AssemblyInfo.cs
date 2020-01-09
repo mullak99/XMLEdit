@@ -7,7 +7,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("XMLEdit")]
 [assembly: AssemblyDescription("A simple XML Editor")]
-[assembly: AssemblyConfiguration("")]
+#if DEBUG
+ [assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 [assembly: AssemblyCompany("mullak99")]
 [assembly: AssemblyProduct("XMLEdit")]
 [assembly: AssemblyCopyright("Apache 2.0 | mullak99 - 2020")]

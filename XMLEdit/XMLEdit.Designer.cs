@@ -50,6 +50,13 @@
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findPreviousToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.incrementalSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EncodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +77,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.EncodingLabel = new System.Windows.Forms.ToolStripLabel();
             this.WordTotalLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.ZoomLevel = new System.Windows.Forms.ToolStripButton();
             this.TopToolStrip = new System.Windows.Forms.ToolStrip();
             this.NewToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.OpenToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -87,8 +96,6 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.ZoomLevel = new System.Windows.Forms.ToolStripButton();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -100,6 +107,7 @@
             this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.searchToolStripMenuItem,
             this.formatToolStripMenuItem,
             this.settingsToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -276,6 +284,68 @@
             this.selectAllToolStripMenuItem.Text = "Select All";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.SelectAllToolStripMenuItem_Click);
             // 
+            // searchToolStripMenuItem
+            // 
+            this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem,
+            this.findNextToolStripMenuItem,
+            this.findPreviousToolStripMenuItem,
+            this.replaceToolStripMenuItem,
+            this.incrementalSearchToolStripMenuItem,
+            this.goToToolStripMenuItem});
+            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.searchToolStripMenuItem.Text = "Search";
+            // 
+            // findToolStripMenuItem
+            // 
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.findToolStripMenuItem.Text = "Find...";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // findNextToolStripMenuItem
+            // 
+            this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
+            this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.findNextToolStripMenuItem.Text = "Find Next";
+            this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
+            // 
+            // findPreviousToolStripMenuItem
+            // 
+            this.findPreviousToolStripMenuItem.Name = "findPreviousToolStripMenuItem";
+            this.findPreviousToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
+            this.findPreviousToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.findPreviousToolStripMenuItem.Text = "Find Previous";
+            this.findPreviousToolStripMenuItem.Click += new System.EventHandler(this.findPreviousToolStripMenuItem_Click);
+            // 
+            // replaceToolStripMenuItem
+            // 
+            this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
+            this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.replaceToolStripMenuItem.Text = "Replace...";
+            this.replaceToolStripMenuItem.Click += new System.EventHandler(this.replaceToolStripMenuItem_Click);
+            // 
+            // incrementalSearchToolStripMenuItem
+            // 
+            this.incrementalSearchToolStripMenuItem.Name = "incrementalSearchToolStripMenuItem";
+            this.incrementalSearchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.I)));
+            this.incrementalSearchToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.incrementalSearchToolStripMenuItem.Text = "Incremental Search";
+            this.incrementalSearchToolStripMenuItem.Click += new System.EventHandler(this.incrementalSearchToolStripMenuItem_Click);
+            // 
+            // goToToolStripMenuItem
+            // 
+            this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
+            this.goToToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.goToToolStripMenuItem.Text = "Go to...";
+            this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
+            // 
             // formatToolStripMenuItem
             // 
             this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -437,6 +507,24 @@
             this.WordTotalLabel.Name = "WordTotalLabel";
             this.WordTotalLabel.Size = new System.Drawing.Size(53, 22);
             this.WordTotalLabel.Text = "Words: 0";
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+            // 
+            // ZoomLevel
+            // 
+            this.ZoomLevel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.ZoomLevel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ZoomLevel.Image = ((System.Drawing.Image)(resources.GetObject("ZoomLevel.Image")));
+            this.ZoomLevel.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ZoomLevel.Name = "ZoomLevel";
+            this.ZoomLevel.Size = new System.Drawing.Size(77, 22);
+            this.ZoomLevel.Text = "Zoom: 100%";
+            this.ZoomLevel.ToolTipText = "Reset Zoom to 100%";
+            this.ZoomLevel.Click += new System.EventHandler(this.ZoomLevel_Click);
             // 
             // TopToolStrip
             // 
@@ -616,24 +704,6 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
-            // 
-            // ZoomLevel
-            // 
-            this.ZoomLevel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.ZoomLevel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ZoomLevel.Image = ((System.Drawing.Image)(resources.GetObject("ZoomLevel.Image")));
-            this.ZoomLevel.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ZoomLevel.Name = "ZoomLevel";
-            this.ZoomLevel.Size = new System.Drawing.Size(77, 22);
-            this.ZoomLevel.Text = "Zoom: 100%";
-            this.ZoomLevel.ToolTipText = "Reset Zoom to 100%";
-            this.ZoomLevel.Click += new System.EventHandler(this.ZoomLevel_Click);
-            // 
             // XMLEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -646,8 +716,10 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.MenuStrip;
             this.Name = "XMLEdit";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "XMLEdit";
             this.Load += new System.EventHandler(this.XMLEdit_Load);
+            this.SizeChanged += new System.EventHandler(this.XMLEdit_SizeChanged);
             this.MenuStrip.ResumeLayout(false);
             this.MenuStrip.PerformLayout();
             this.BottomToolStrip.ResumeLayout(false);
@@ -720,6 +792,13 @@
         private System.Windows.Forms.ToolStripLabel WordTotalLabel;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripButton ZoomLevel;
+        private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findNextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findPreviousToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem incrementalSearchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
     }
 }
 

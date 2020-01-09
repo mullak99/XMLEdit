@@ -94,6 +94,7 @@
             this.homeLinkLabel.TabIndex = 5;
             this.homeLinkLabel.TabStop = true;
             this.homeLinkLabel.Text = "https://gitlab.mullak99.co.uk/mullak99/xmledit/";
+            this.homeLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.homeLinkLabel_LinkClicked);
             // 
             // authorLabel
             // 
