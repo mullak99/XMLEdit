@@ -74,6 +74,7 @@
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Notepad.cs" />
+    <Compile Include="UserThemes.cs" />
     <Compile Include="XMLEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +138,18 @@
     <Content Include="FodyWeavers.xml" />
     <None Include="Resources\XmlEdit_Icon.png" />
     <Content Include="XMLEdit.ico" />
+    <ContentWithTargetPath Include="Resources\dark.xetheme">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>themes\dark.xetheme</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources\pureblack.xetheme">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>themes\pureblack.xetheme</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources\verygreentest.xetheme">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>themes\verygreentest.xetheme</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

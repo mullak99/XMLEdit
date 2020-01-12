@@ -18,9 +18,7 @@ namespace XMLEdit
 
         Font _defaultFont = new Font("Consolas", 10);
 
-        Theme _defaultTheme = new Theme();
-        Theme _darkTheme = new Theme();
-        Theme _pureBlackTheme = new Theme();
+        UserThemes _uThemes = new UserThemes();
 
         Font _globalFont;
         Theme _globalTheme;
@@ -29,41 +27,6 @@ namespace XMLEdit
         {
             InitializeComponent();
             _aboutForm.Owner = this;
-
-            #region Default Themes
-            _darkTheme.StandardTextColor = Color.White;
-            _darkTheme.StandardBackgroundColor = Color.FromArgb(30, 30, 30);
-            _darkTheme.LineNumberTextColor = Color.LightGray;
-            _darkTheme.LineNumberBackgroundColor = Color.FromArgb(60, 60, 60);
-            _darkTheme.FolderMarkerTextColor = Color.LightGray;
-            _darkTheme.FolderMarkerBackgroundColor = Color.FromArgb(60, 60, 60);
-            _darkTheme.FolderMarkerHighlightColor = Color.FromArgb(75, 75, 75);
-            _darkTheme.XmlAttributeTextColor = Color.Aqua;
-            _darkTheme.XmlEntityTextColor = Color.Aqua;
-            _darkTheme.XmlTagTextColor = Color.LightSkyBlue;
-            _darkTheme.XmlTagEndTextColor = Color.LightSkyBlue;
-            _darkTheme.BraceGoodColor = Color.Lime;
-            _darkTheme.BraceBadColor = Color.Crimson;
-            _darkTheme.UnifyBackgrounds(Color.FromArgb(30, 30, 30));
-
-            _pureBlackTheme.StandardTextColor = Color.White;
-            _pureBlackTheme.StandardBackgroundColor = Color.FromArgb(0, 0, 0);
-            _pureBlackTheme.LineNumberTextColor = Color.LightGray;
-            _pureBlackTheme.LineNumberBackgroundColor = Color.FromArgb(30, 30, 30);
-            _pureBlackTheme.FolderMarkerTextColor = Color.LightGray;
-            _pureBlackTheme.FolderMarkerBackgroundColor = Color.FromArgb(30, 30, 30);
-            _pureBlackTheme.FolderMarkerHighlightColor = Color.FromArgb(45, 45, 45);
-            _pureBlackTheme.XmlAttributeTextColor = Color.Aqua;
-            _pureBlackTheme.XmlEntityTextColor = Color.Aqua;
-            _pureBlackTheme.XmlTagTextColor = Color.LightSkyBlue;
-            _pureBlackTheme.XmlTagEndTextColor = Color.LightSkyBlue;
-            _pureBlackTheme.BraceGoodColor = Color.Lime;
-            _pureBlackTheme.BraceBadColor = Color.Crimson;
-            _pureBlackTheme.UnifyBackgrounds(Color.FromArgb(0, 0, 0));
-            #endregion
-
-            _globalFont = _defaultFont;
-            _globalTheme = _defaultTheme;
 
             Init();
         }
@@ -83,8 +46,29 @@ namespace XMLEdit
             Properties.Settings.Default.Upgrade();
 
             this.Size = Properties.Settings.Default.appSize;
+            _globalFont = _defaultFont;
+
+            PopulateThemes();
             SelectTheme(Properties.Settings.Default.selectedTheme);
             OpenCachedTabs();
+        }
+
+        private void PopulateThemes()
+        {
+            themeToolStripMenuItem.DropDownItems.Clear();
+
+            foreach (Theme theme in _uThemes.GetAllThemes())
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Name = theme.ThemeID + "_toolStripMenuItem";
+                item.Text = theme.ThemeName;
+                item.ToolTipText = theme.ThemeName + " by " + theme.ThemeAuthor;
+                item.Click += delegate { SelectTheme(theme.ThemeID); };
+
+                themeToolStripMenuItem.DropDownItems.Add(item);
+            }
+
+            _globalTheme = _uThemes.SelectThemeWithID("default");
         }
 
         private void OpenCachedTabs()
@@ -101,36 +85,26 @@ namespace XMLEdit
             catch { }
         }
 
-        private void SelectTheme(string themeName)
+        private void SelectTheme(string themeID)
         {
-            if (themeName.ToLower() == "dark")
+            if (_uThemes.DoesThemeExist(themeID))
             {
-                _globalTheme = _darkTheme;
+                foreach (ToolStripMenuItem item in themeToolStripMenuItem.DropDownItems)
+                {
+                    if (item.Name == (themeID + "_toolStripMenuItem")) item.Checked = true;
+                    else item.Checked = false;
+                }
 
-                DefaultToolStripMenuItem.Checked = false;
-                DarkModeToolStripMenuItem.Checked = true;
-                PureBlackModeToolStripMenuItem.Checked = false;
+                _globalTheme = _uThemes.SelectThemeWithID(themeID);
 
-                Properties.Settings.Default.selectedTheme = "dark";
-            }
-            else if (themeName.ToLower() == "pureblack")
-            {
-                _globalTheme = _pureBlackTheme;
+                Properties.Settings.Default.selectedTheme = themeID;
 
-                DefaultToolStripMenuItem.Checked = false;
-                DarkModeToolStripMenuItem.Checked = false;
-                PureBlackModeToolStripMenuItem.Checked = true;
-
-                Properties.Settings.Default.selectedTheme = "pureblack";
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Reload();
             }
             else
             {
-                _globalTheme = _defaultTheme;
-
-                DefaultToolStripMenuItem.Checked = true;
-                DarkModeToolStripMenuItem.Checked = false;
-                PureBlackModeToolStripMenuItem.Checked = false;
-
+                _globalTheme = _uThemes.SelectThemeWithID("default");
                 Properties.Settings.Default.selectedTheme = "default";
             }
 
@@ -447,16 +421,6 @@ namespace XMLEdit
         private void ZoomLevel_Click(object sender, EventArgs e)
         {
             notepadPages[TabbedNotepad.SelectedIndex].Zoom = 0;
-        }
-
-        private void SetDefaultThemeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sender == DefaultToolStripMenuItem)
-                SelectTheme("default");
-            else if (sender == DarkModeToolStripMenuItem)
-                SelectTheme("dark");
-            else if (sender == PureBlackModeToolStripMenuItem)
-                SelectTheme("pureblack");
         }
 
         private void SetEncodingToolStripMenuItem_Click(object sender, EventArgs e)

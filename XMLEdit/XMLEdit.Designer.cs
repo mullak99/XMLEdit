@@ -65,9 +65,6 @@
             this.UTF8ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DarkModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PureBlackModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutXMLEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStrip = new System.Windows.Forms.ToolStrip();
@@ -405,36 +402,9 @@
             // 
             // themeToolStripMenuItem
             // 
-            this.themeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.DefaultToolStripMenuItem,
-            this.DarkModeToolStripMenuItem,
-            this.PureBlackModeToolStripMenuItem});
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.themeToolStripMenuItem.Text = "Theme";
-            // 
-            // DefaultToolStripMenuItem
-            // 
-            this.DefaultToolStripMenuItem.Checked = true;
-            this.DefaultToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem";
-            this.DefaultToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.DefaultToolStripMenuItem.Text = "Default";
-            this.DefaultToolStripMenuItem.Click += new System.EventHandler(this.SetDefaultThemeToolStripMenuItem_Click);
-            // 
-            // DarkModeToolStripMenuItem
-            // 
-            this.DarkModeToolStripMenuItem.Name = "DarkModeToolStripMenuItem";
-            this.DarkModeToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.DarkModeToolStripMenuItem.Text = "Dark Mode";
-            this.DarkModeToolStripMenuItem.Click += new System.EventHandler(this.SetDefaultThemeToolStripMenuItem_Click);
-            // 
-            // PureBlackModeToolStripMenuItem
-            // 
-            this.PureBlackModeToolStripMenuItem.Name = "PureBlackModeToolStripMenuItem";
-            this.PureBlackModeToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.PureBlackModeToolStripMenuItem.Text = "Pure-Black Mode";
-            this.PureBlackModeToolStripMenuItem.Click += new System.EventHandler(this.SetDefaultThemeToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -718,6 +688,7 @@
             this.Name = "XMLEdit";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "XMLEdit";
+            this.MaximumSizeChanged += new System.EventHandler(this.XMLEdit_SizeChanged);
             this.Load += new System.EventHandler(this.XMLEdit_Load);
             this.SizeChanged += new System.EventHandler(this.XMLEdit_SizeChanged);
             this.MenuStrip.ResumeLayout(false);
@@ -766,9 +737,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripButton FontToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem themeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem DarkModeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem PureBlackModeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem DefaultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EncodingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ANSIToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem UTF8ToolStripMenuItem;

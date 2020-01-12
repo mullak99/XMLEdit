@@ -41,7 +41,6 @@ namespace XMLEdit
             _scintillaText.WrapMode = WrapMode.None;
             _scintillaText.IndentationGuides = IndentView.LookBoth;
             _scintillaText.Lexer = Lexer.Xml;
-
             _scintillaText.ScrollWidth = 1;
             _scintillaText.ScrollWidthTracking = true;
 
@@ -248,11 +247,7 @@ namespace XMLEdit
         public Theme Theme
         {
             get { return _theme; }
-            set 
-            {
-                _theme = value;
-                ApplyTheme(_theme);
-            }
+            set  { _theme = value; ApplyTheme(_theme); }
         }
 
         public string FileName
@@ -488,12 +483,33 @@ namespace XMLEdit
 
     public class Theme
     {
+        private string _themeID, _themeName;
+        private string _themeAuthor = "Unnamed Author";
+
         private Color _standardText, _standardBack, _lineNumText, _lineNumBack, _folderMarkerText, _folderMarkerBack, _folderMarkerHigh, _xmlAttFore, _xmlAttBack,
             _xmlEntFore, _xmlEntBack, _xmlComFore, _xmlComBack, _xmlTagFore, _xmlTagBack, _xmlTagEndFore, _xmlTagEndBack, _xmlDsFore, _xmlDsBack, 
             _xmlSsFore, _xmlSsBack, _braceGood, _braceBad, _selection;
 
+        public Theme(string themeID, string themeName) : this()
+        {
+            _themeID = themeID;
+            _themeName = themeName;
+        }
+
         public Theme()
         {
+            {
+                int randInt = new Random().Next(0, 8192);
+
+                if (String.IsNullOrWhiteSpace(_themeName) && !String.IsNullOrWhiteSpace(_themeID))
+                    _themeName = _themeID;
+                else if (String.IsNullOrWhiteSpace(_themeName) && String.IsNullOrWhiteSpace(_themeID))
+                {
+                    _themeID = ((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "_" + randInt;
+                    _themeName = "Unnamed Theme " + randInt;
+                }              
+            }
+
             _standardText = Color.Black;
             _standardBack = Color.White;
 
@@ -529,6 +545,24 @@ namespace XMLEdit
             _braceBad = Color.Red;
 
             _selection = Color.FromArgb(51, 153, 255);
+        }
+
+        public string ThemeID
+        {
+            get { return _themeID; }
+            set { _themeID = value; }
+        }
+
+        public string ThemeName
+        {
+            get { return _themeName; }
+            set { _themeName = value; }
+        }
+
+        public string ThemeAuthor
+        {
+            get { return _themeAuthor; }
+            set { _themeAuthor = value; }
         }
 
         public void UnifyBackgrounds(Color color)
