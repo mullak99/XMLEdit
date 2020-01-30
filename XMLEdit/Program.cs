@@ -9,7 +9,7 @@ namespace XMLEdit
     static class Program
     {
         private const bool IsPreReleaseBuild = true;
-        private const string PreReleaseTag = "DEV_200112-1";
+        private const string PreReleaseTag = "DEV_200130-1";
                
         [STAThread]
         static void Main(string[] args)

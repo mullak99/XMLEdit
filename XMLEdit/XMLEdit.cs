@@ -11,13 +11,11 @@ namespace XMLEdit
 {
     public partial class XMLEdit : Form
     {
-        List<NotepadPage> notepadPages = new List<NotepadPage>();
         List<string> tabFileNames = new List<string>();
 
         AboutForm _aboutForm = new AboutForm();
 
         Font _defaultFont = new Font("Consolas", 10);
-
         UserThemes _uThemes = new UserThemes();
 
         Font _globalFont;
@@ -34,9 +32,7 @@ namespace XMLEdit
         public XMLEdit(string[] paths) : this()
         {
             foreach (string path in paths)
-            {
                 OpenTab(path);
-            }
         }
 
         #region Methods
@@ -67,7 +63,6 @@ namespace XMLEdit
 
                 themeToolStripMenuItem.DropDownItems.Add(item);
             }
-
             _globalTheme = _uThemes.SelectThemeWithID("default");
         }
 
@@ -137,7 +132,7 @@ namespace XMLEdit
 
         private void ApplyTheme(Theme theme)
         {
-            foreach (NotepadPage npPage in notepadPages)
+            foreach (NotepadPage npPage in TabbedNotepad.Controls)
             {
                 npPage.Theme = theme;
             }
@@ -145,11 +140,12 @@ namespace XMLEdit
 
         private void CacheOpenFiles()
         {
+            NotepadPage[] notepadPages = TabbedNotepad.Controls.OfType<NotepadPage>().ToArray();
+
             StringCollection paths = new StringCollection();
             paths.AddRange(notepadPages.Select(i => i.FilePath).ToArray());
 
             Properties.Settings.Default.openFiles = paths;
-
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();
         }
@@ -159,9 +155,10 @@ namespace XMLEdit
 
         private void ForceRemoveTabAt(int index)
         {
-            string fileName = notepadPages[index].FileName;
+            NotepadPage notepadPage = TabbedNotepad.Controls[index] as NotepadPage;
+            string fileName = notepadPage.FileName;
 
-            notepadPages.RemoveAt(index);
+            TabbedNotepad.Controls.RemoveAt(index);
             TabbedNotepad.TabPages.RemoveAt(index);
             tabFileNames.Remove(fileName);
             CacheOpenFiles();
@@ -171,7 +168,7 @@ namespace XMLEdit
 
         private void AddTab(NotepadPage notepadPage, bool skipAdd = false)
         {
-            if (!skipAdd) notepadPages.Add(notepadPage);
+            if (!skipAdd) TabbedNotepad.Controls.Add(notepadPage);
             notepadPage.Focus();
 
             CacheOpenFiles();
@@ -185,17 +182,17 @@ namespace XMLEdit
                 string oldTabFileName = "";
                 bool skipAdd = false;
 
-                if ((notepadPages.Count > 0 && !String.IsNullOrWhiteSpace(notepadPages[TabbedNotepad.SelectedIndex].Text)) || notepadPages.Count == 0)
-                    notepadPage = new NotepadPage(ref TabbedNotepad, "", _globalFont, _globalTheme);
+                if ((TabbedNotepad.Controls.Count > 0 && !String.IsNullOrWhiteSpace(TabbedNotepad.Controls[TabbedNotepad.SelectedIndex].Text)) || TabbedNotepad.Controls.Count == 0)
+                    notepadPage = new NotepadPage("", _globalFont, _globalTheme);
                 else
                 {
-                    oldTabFileName = notepadPages[notepadPages.Count - 1].FileName;
-                    notepadPage = notepadPages[notepadPages.Count - 1];
+                    NotepadPage lastNotepadPage = TabbedNotepad.Controls[TabbedNotepad.Controls.Count - 1] as NotepadPage;
+                    oldTabFileName = lastNotepadPage.FileName;
+                    notepadPage = lastNotepadPage;
                     skipAdd = true;
                 }
 
                 bool opened;
-
                 if (String.IsNullOrWhiteSpace(path)) opened = notepadPage.Open();
                 else opened = notepadPage.Open(path);
 
@@ -213,9 +210,11 @@ namespace XMLEdit
             bool ret = false;
             try
             {
+                NotepadPage[] notepadPages = TabbedNotepad.Controls.OfType<NotepadPage>().ToArray();
+
                 if (notepadPages[index].Saved)
                 {
-                    if (TabbedNotepad.TabCount > 1 || !String.IsNullOrEmpty(notepadPages[index].Text))
+                    if (TabbedNotepad.TabCount > 1 || !String.IsNullOrEmpty(notepadPages[index].TextboxText))
                     {
                         ForceRemoveTabAt(index);
                         ret = true;
@@ -247,12 +246,12 @@ namespace XMLEdit
         private bool CloseAllTabs()
         {
             bool didAllClose = true;
-            NotepadPage[] tempPages = new NotepadPage[notepadPages.Count];
-            notepadPages.CopyTo(tempPages);
+            NotepadPage[] notepadPages = TabbedNotepad.Controls.OfType<NotepadPage>().ToArray();
+            NotepadPage[] tempPages = notepadPages;
 
             foreach (NotepadPage npPage in tempPages)
             {
-                if (!CloseTabAt(notepadPages.IndexOf(npPage)) && !npPage.Saved)
+                if (!CloseTabAt(Array.IndexOf(notepadPages, npPage)) && !npPage.Saved)
                     didAllClose = false;
             }
             return didAllClose;
@@ -287,7 +286,7 @@ namespace XMLEdit
 
         private void TabbedNotepad_Click(object sender, EventArgs e)
         {
-            foreach (NotepadPage npPage in notepadPages)
+            foreach (NotepadPage npPage in TabbedNotepad.Controls)
             {
                 npPage.Focus();
             }
@@ -298,7 +297,7 @@ namespace XMLEdit
 
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NotepadPage notepadPage = new NotepadPage(ref TabbedNotepad, GetNewFileName(), _globalFont, _globalTheme);
+            NotepadPage notepadPage = new NotepadPage(GetNewFileName(), _globalFont, _globalTheme);
             AddTab(notepadPage);
         }
 
@@ -309,12 +308,14 @@ namespace XMLEdit
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Save();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Save();
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].SaveAs();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.SaveAs();
         }
 
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -334,67 +335,80 @@ namespace XMLEdit
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].ShowFinder();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.ShowFinder();
         }
 
         private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].FindNext();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.FindNext();
         }
 
         private void findPreviousToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].FindPrev();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.FindPrev();
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].ShowReplace();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.ShowReplace();
         }
 
         private void incrementalSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].ShowIncSearch();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.ShowIncSearch();
         }
 
         private void goToToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].ShowGoTo();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.ShowGoTo();
         }
 
         private void CutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Cut();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Cut();
         }
 
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Copy();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Copy();
         }
 
         private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Paste();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Paste();
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Delete();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Delete();
         }
 
         private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].SelectAll();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.SelectAll();
         }
 
         private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Undo();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Undo();
         }
 
         private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Redo();
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Redo();
         }
 
         private void FontToolStripMenuItem_Click(object sender, EventArgs e)
@@ -411,7 +425,7 @@ namespace XMLEdit
             {
                 _globalFont = fontDiag.Font;
 
-                foreach (NotepadPage npPage in notepadPages)
+                foreach (NotepadPage npPage in TabbedNotepad.Controls)
                 {
                     npPage.Font = _globalFont;
                 }
@@ -420,28 +434,30 @@ namespace XMLEdit
 
         private void ZoomLevel_Click(object sender, EventArgs e)
         {
-            notepadPages[TabbedNotepad.SelectedIndex].Zoom = 0;
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            npPage.Zoom = 0;
         }
 
         private void SetEncodingToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
             if (sender == ANSIToolStripMenuItem)
             {
-                notepadPages[TabbedNotepad.SelectedIndex].Encoding = Encoding.Default;
+                npPage.Encoding = Encoding.Default;
                 ANSIToolStripMenuItem.Checked = true;
                 ASCIIToolStripMenuItem.Checked = false;
                 UTF8ToolStripMenuItem.Checked = false;
             }
             else if (sender == ASCIIToolStripMenuItem)
             {
-                notepadPages[TabbedNotepad.SelectedIndex].Encoding = Encoding.ASCII;
+                npPage.Encoding = Encoding.ASCII;
                 ANSIToolStripMenuItem.Checked = false;
                 ASCIIToolStripMenuItem.Checked = true;
                 UTF8ToolStripMenuItem.Checked = false;
             }
             else if (sender == UTF8ToolStripMenuItem)
             {
-                notepadPages[TabbedNotepad.SelectedIndex].Encoding = Encoding.UTF8;
+                npPage.Encoding = Encoding.UTF8;
                 ANSIToolStripMenuItem.Checked = false;
                 ASCIIToolStripMenuItem.Checked = false;
                 UTF8ToolStripMenuItem.Checked = true;
@@ -537,7 +553,7 @@ namespace XMLEdit
 
         private void XMLEdit_Load(object sender, EventArgs e)
         {
-            if (notepadPages.Count == 0) NewToolStripMenuItem_Click(sender, e);
+            if (TabbedNotepad.Controls.Count == 0) NewToolStripMenuItem_Click(sender, e);
         }
 
         private void Runtime_Tick(object sender, EventArgs e)
@@ -546,12 +562,14 @@ namespace XMLEdit
             {
                 if (TabbedNotepad.TabCount == 0) NewToolStripMenuItem_Click(sender, e);
 
+                NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+
                 char[] delimiters = new char[] { ' ', '\r', '\n' };
 
-                int textLen = notepadPages[TabbedNotepad.SelectedIndex].Text.Length;
-                int lineLen = notepadPages[TabbedNotepad.SelectedIndex].Lines.Count;
-                int wordCount = notepadPages[TabbedNotepad.SelectedIndex].Text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
-                int zoom = notepadPages[TabbedNotepad.SelectedIndex].Zoom;
+                int textLen = npPage.TextboxText.Length;
+                int lineLen = npPage.Lines.Count;
+                int wordCount = npPage.TextboxText.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
+                int zoom = npPage.Zoom;
 
                 TextLengthLabel.Text = "Length: " + textLen;
 
@@ -560,9 +578,9 @@ namespace XMLEdit
 
                 WordTotalLabel.Text = "Words: " + wordCount;
 
-                TextLengthLabel.ToolTipText = String.Format("Total characters in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, textLen);
-                LineTotalLabel.ToolTipText = String.Format("Total lines in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, lineLen);
-                WordTotalLabel.ToolTipText = String.Format("Total words in {0}: {1}", notepadPages[TabbedNotepad.SelectedIndex].FileName, wordCount);
+                TextLengthLabel.ToolTipText = String.Format("Total characters in {0}: {1}", npPage.FileName, textLen);
+                LineTotalLabel.ToolTipText = String.Format("Total lines in {0}: {1}", npPage.FileName, lineLen);
+                WordTotalLabel.ToolTipText = String.Format("Total words in {0}: {1}", npPage.FileName, wordCount);
 
                 if (zoom > -10)
                     ZoomLevel.Text = String.Format("Zoom: {0}0%", (10 + zoom));
@@ -570,50 +588,50 @@ namespace XMLEdit
                     ZoomLevel.Text = "Zoom: 0%";
 
                 string TabTitle, TabToolTip;
-                if (notepadPages[TabbedNotepad.SelectedIndex].Saved)
+                if (npPage.Saved)
                 {
                     try
                     {
-                        TabTitle = notepadPages[TabbedNotepad.SelectedIndex].FileName.Substring(0, 11).TrimEnd(' ', '.') + "...";
+                        TabTitle = npPage.FileName.Substring(0, 11).TrimEnd(' ', '.') + "...";
                     }
                     catch
                     {
-                        TabTitle = notepadPages[TabbedNotepad.SelectedIndex].FileName;
+                        TabTitle = npPage.FileName;
                     }
 
-                    TabToolTip = notepadPages[TabbedNotepad.SelectedIndex].FileName;
-                    this.Text = String.Format("{0} - XMLEdit", notepadPages[TabbedNotepad.SelectedIndex].FileName);
+                    TabToolTip = npPage.FileName;
+                    this.Text = String.Format("{0} - XMLEdit", npPage.FileName);
                 }
                 else
                 {
                     try
                     {
-                        TabTitle = ("(*) " + notepadPages[TabbedNotepad.SelectedIndex].FileName).Substring(0, 11).TrimEnd(' ', '.') + "...";
+                        TabTitle = ("(*) " + npPage.FileName).Substring(0, 11).TrimEnd(' ', '.') + "...";
                     }
                     catch
                     {
-                        TabTitle = ("(*) " + notepadPages[TabbedNotepad.SelectedIndex].FileName);
+                        TabTitle = ("(*) " + npPage.FileName);
                     }
-                    TabToolTip = "(Unsaved) " + notepadPages[TabbedNotepad.SelectedIndex].FileName;
-                    this.Text = String.Format("(*) {0} - XMLEdit", notepadPages[TabbedNotepad.SelectedIndex].FileName);
+                    TabToolTip = "(Unsaved) " + npPage.FileName;
+                    this.Text = String.Format("(*) {0} - XMLEdit", npPage.FileName);
                 }
 
-                if (TabTitle != null && TabToolTip != null && notepadPages[TabbedNotepad.SelectedIndex].TabTitle != TabTitle || notepadPages[TabbedNotepad.SelectedIndex].TabToolTip != TabToolTip)
+                if (TabTitle != null && TabToolTip != null && npPage.TabTitle != TabTitle || npPage.TabToolTip != TabToolTip)
                 {
-                    notepadPages[TabbedNotepad.SelectedIndex].TabTitle = TabTitle;
-                    notepadPages[TabbedNotepad.SelectedIndex].TabToolTip = TabToolTip;
+                    npPage.TabTitle = TabTitle;
+                    npPage.TabToolTip = TabToolTip;
 
                     TabbedNotepad.Refresh();
-                    notepadPages[TabbedNotepad.SelectedIndex].Focus();
+                    npPage.Focus();
                 }
 
-                EncodingLabel.Text = notepadPages[TabbedNotepad.SelectedIndex].EncodingString.ToUpper();
+                EncodingLabel.Text = npPage.EncodingString.ToUpper();
 
-                if (notepadPages[TabbedNotepad.SelectedIndex].Encoding == Encoding.Default && !ANSIToolStripMenuItem.Checked)
+                if (npPage.Encoding == Encoding.Default && !ANSIToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(ANSIToolStripMenuItem, e);
-                else if (notepadPages[TabbedNotepad.SelectedIndex].Encoding == Encoding.ASCII && !ASCIIToolStripMenuItem.Checked)
+                else if (npPage.Encoding == Encoding.ASCII && !ASCIIToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(ASCIIToolStripMenuItem, e);
-                else if (notepadPages[TabbedNotepad.SelectedIndex].Encoding == Encoding.UTF8 && !UTF8ToolStripMenuItem.Checked)
+                else if (npPage.Encoding == Encoding.UTF8 && !UTF8ToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(UTF8ToolStripMenuItem, e);
             }
             catch { }

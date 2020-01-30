@@ -11,10 +11,8 @@ using ScintillaNET_FindReplaceDialog;
 
 namespace XMLEdit
 {
-    public class NotepadPage
+    public class NotepadPage : TabPage
     {
-        private TabControl _tabControl;
-        private TabPage _tabPage;
         private Scintilla _scintillaText;
         private AutocompleteMenu _autocompleteMenu = new AutocompleteMenu();
         private FindReplace _findDiag;
@@ -27,9 +25,8 @@ namespace XMLEdit
 
         private const int MaxTabTitleLength = 11;
 
-        public NotepadPage(ref TabControl tabControl, string fileName, Font font, Theme theme, bool switchToNewTab = true, string filePath = null)
+        public NotepadPage(string fileName, Font font, Theme theme, bool switchToNewTab = true, string filePath = null)
         {
-            _tabControl = tabControl;
             _fileName = fileName;
             _filePath = filePath;
             _switchToNewTab = switchToNewTab;
@@ -46,20 +43,14 @@ namespace XMLEdit
 
             ApplyTheme(theme);
 
-            _tabPage = new TabPage();
-
             if (_fileName.Length > (MaxTabTitleLength + 3))
-                _tabPage.Text = _fileName.Substring(0, MaxTabTitleLength).TrimEnd(' ', '.') + "...";
+                this.Text = _fileName.Substring(0, MaxTabTitleLength).TrimEnd(' ', '.') + "...";
             else
-                _tabPage.Text = _fileName;
+                this.Text = _fileName;
 
             UpdateFilePath();
 
-            _tabPage.Controls.Add(_scintillaText);
-
-            _tabControl.Controls.Add(_tabPage);
-            _tabControl.SelectedTab = _tabPage;
-            _tabControl.Refresh();
+            this.Controls.Add(_scintillaText);
 
             _autocompleteMenu.TargetControlWrapper = new ScintillaWrapper(_scintillaText);
             _autocompleteMenu.SetAutocompleteItems(new DynamicCollection(_scintillaText));
@@ -71,6 +62,7 @@ namespace XMLEdit
             _scintillaText.UpdateUI += NotepadPage_UpdateUI;
 
             Focus();
+            Refresh();
         }
 
         public void ShowFinder()
@@ -107,9 +99,9 @@ namespace XMLEdit
         private void UpdateFilePath()
         {
             if (_filePath != null)
-                _tabPage.ToolTipText = Path.GetFullPath(_filePath);
+                this.ToolTipText = Path.GetFullPath(_filePath);
             else
-                _tabPage.ToolTipText = _fileName;
+                this.ToolTipText = _fileName;
         }
 
         private void ApplyTheme(Theme theme)
@@ -227,7 +219,7 @@ namespace XMLEdit
             ApplyTheme(new Theme());
         }
 
-        public bool Focus()
+        public new bool Focus()
         {
             if (_switchToNewTab) return _scintillaText.Focus();
 
@@ -262,29 +254,29 @@ namespace XMLEdit
 
         public string TabTitle
         {
-            get { return _tabPage.Text; }
+            get { return this.Text; }
             set
             {
                 if (value.Length > (MaxTabTitleLength + 3))
-                    _tabPage.Text = value.Substring(0, MaxTabTitleLength).TrimEnd(' ', '.') + "...";
+                    this.Text = value.Substring(0, MaxTabTitleLength).TrimEnd(' ', '.') + "...";
                 else
-                    _tabPage.Text = value;
+                    this.Text = value;
             }
         }
 
         public string TabToolTip
         {
-            get { return _tabPage.ToolTipText; }
-            set { _tabPage.ToolTipText = value; }
+            get { return this.ToolTipText; }
+            set { this.ToolTipText = value; }
         }
         
-        public Font Font
+        public new Font Font
         {
             get { return _font; }
             set { _font = value; ApplyTheme(_theme); }
         }
 
-        public string Text
+        public string TextboxText
         {
             get { return _scintillaText.Text; }
             set { _scintillaText.Text = value; }
@@ -363,7 +355,7 @@ namespace XMLEdit
             {
                 _scintillaText.SetSavePoint();
 
-                File.WriteAllText(_filePath, this.Text, _textEncoding);
+                File.WriteAllText(_filePath, this.TextboxText, _textEncoding);
 
                 return true;
             }
@@ -381,12 +373,12 @@ namespace XMLEdit
                 _fileName = Path.GetFileName(saveFileDiag.FileName);
                 _filePath = Path.GetFullPath(saveFileDiag.FileName);
 
-                _tabPage.Text = _fileName;
-                _tabPage.ToolTipText = _fileName;
+                this.Text = _fileName;
+                this.ToolTipText = _fileName;
 
                 _scintillaText.SetSavePoint();
 
-                File.WriteAllText(_filePath, this.Text, _textEncoding);
+                File.WriteAllText(_filePath, this.TextboxText, _textEncoding);
 
                 return true;
             }
@@ -415,8 +407,6 @@ namespace XMLEdit
                 TabToolTip = _filePath;
 
                 UpdateFilePath();
-
-                _tabControl.Refresh();
 
                 _scintillaText.Text = File.ReadAllText(_filePath, _textEncoding);
 

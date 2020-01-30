@@ -9,7 +9,6 @@ namespace XMLEdit
     class UserThemes
     {
         ThemeLoader tLoader = new ThemeLoader();
-
         List<Theme> themes = new List<Theme>();
 
         public UserThemes()
@@ -57,12 +56,12 @@ namespace XMLEdit
 
         public void AddTheme(string path)
         {
-
+            throw new NotImplementedException("Adding themes is not yet supported! Manually add files to the '/themes' folder instead.");
         }
 
         public void LoadTheme(string themeName)
         {
-
+            throw new NotImplementedException("Theme loading is not yet supported!");
         }
 
         private void LoadDefaultTheme()
@@ -81,23 +80,20 @@ namespace XMLEdit
 
         public Theme LoadTheme(string themeName)
         {
-            return null;
+            throw new NotImplementedException("Theme loading is not yet supported!");
         }
 
         public List<Theme> LoadThemeFolder(string themeFolder = "themes")
         {
             try
             {
-                string[] themeFiles = System.IO.Directory.GetFiles(themeFolder, "*.xetheme");
+                string[] themeFiles = Directory.GetFiles(themeFolder, "*.xetheme");
                 List<Theme> themes = new List<Theme>();
 
                 foreach (string theme in themeFiles)
-                {
                     themes.Add(ProcessTheme(theme));
-                }
 
                 return themes;
-
             }
             catch
             {
