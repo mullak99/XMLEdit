@@ -65,6 +65,11 @@
             this.UTF8ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wellFormedCheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.xSDValidationCheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutXMLEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStrip = new System.Windows.Forms.ToolStrip();
@@ -76,6 +81,8 @@
             this.WordTotalLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.ZoomLevel = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.wellFormedButton = new System.Windows.Forms.ToolStripButton();
             this.TopToolStrip = new System.Windows.Forms.ToolStrip();
             this.NewToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.OpenToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -93,6 +100,7 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -107,10 +115,11 @@
             this.searchToolStripMenuItem,
             this.formatToolStripMenuItem,
             this.settingsToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(880, 24);
+            this.MenuStrip.Size = new System.Drawing.Size(834, 24);
             this.MenuStrip.TabIndex = 0;
             this.MenuStrip.Text = "menuStrip1";
             // 
@@ -395,7 +404,8 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.themeToolStripMenuItem});
+            this.themeToolStripMenuItem,
+            this.optionsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -405,6 +415,46 @@
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
             this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.themeToolStripMenuItem.Text = "Theme";
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.validationToolStripMenuItem,
+            this.viewToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // validationToolStripMenuItem
+            // 
+            this.validationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.wellFormedCheckToolStripMenuItem,
+            this.xSDValidationCheckToolStripMenuItem});
+            this.validationToolStripMenuItem.Name = "validationToolStripMenuItem";
+            this.validationToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.validationToolStripMenuItem.Text = "Validation";
+            // 
+            // wellFormedCheckToolStripMenuItem
+            // 
+            this.wellFormedCheckToolStripMenuItem.Name = "wellFormedCheckToolStripMenuItem";
+            this.wellFormedCheckToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.wellFormedCheckToolStripMenuItem.Text = "Well-Formed Check";
+            this.wellFormedCheckToolStripMenuItem.Click += new System.EventHandler(this.wellFormedCheckToolStripMenuItem_Click);
+            // 
+            // xSDValidationCheckToolStripMenuItem
+            // 
+            this.xSDValidationCheckToolStripMenuItem.Enabled = false;
+            this.xSDValidationCheckToolStripMenuItem.Name = "xSDValidationCheckToolStripMenuItem";
+            this.xSDValidationCheckToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.xSDValidationCheckToolStripMenuItem.Text = "XSD Validation Check";
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.viewToolStripMenuItem.Text = "Show XML Tree";
+            this.viewToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -434,11 +484,13 @@
             this.EncodingLabel,
             this.WordTotalLabel,
             this.toolStripSeparator9,
-            this.ZoomLevel});
-            this.BottomToolStrip.Location = new System.Drawing.Point(0, 458);
+            this.ZoomLevel,
+            this.toolStripSeparator10,
+            this.wellFormedButton});
+            this.BottomToolStrip.Location = new System.Drawing.Point(0, 486);
             this.BottomToolStrip.Name = "BottomToolStrip";
             this.BottomToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.BottomToolStrip.Size = new System.Drawing.Size(880, 25);
+            this.BottomToolStrip.Size = new System.Drawing.Size(834, 25);
             this.BottomToolStrip.TabIndex = 3;
             this.BottomToolStrip.Text = "toolStrip2";
             // 
@@ -496,6 +548,22 @@
             this.ZoomLevel.ToolTipText = "Reset Zoom to 100%";
             this.ZoomLevel.Click += new System.EventHandler(this.ZoomLevel_Click);
             // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            // 
+            // wellFormedButton
+            // 
+            this.wellFormedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.wellFormedButton.Image = ((System.Drawing.Image)(resources.GetObject("wellFormedButton.Image")));
+            this.wellFormedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.wellFormedButton.Name = "wellFormedButton";
+            this.wellFormedButton.Size = new System.Drawing.Size(137, 22);
+            this.wellFormedButton.Text = "Well-Formed: Unknown";
+            this.wellFormedButton.ToolTipText = "Click for more information";
+            this.wellFormedButton.Click += new System.EventHandler(this.wellFormedButton_Click);
+            // 
             // TopToolStrip
             // 
             this.TopToolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
@@ -519,7 +587,7 @@
             this.TopToolStrip.Location = new System.Drawing.Point(0, 24);
             this.TopToolStrip.Name = "TopToolStrip";
             this.TopToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.TopToolStrip.Size = new System.Drawing.Size(880, 25);
+            this.TopToolStrip.Size = new System.Drawing.Size(834, 25);
             this.TopToolStrip.TabIndex = 5;
             this.TopToolStrip.Text = "toolStrip2";
             // 
@@ -665,7 +733,7 @@
             this.TabbedNotepad.Padding = new System.Drawing.Point(0, 0);
             this.TabbedNotepad.SelectedIndex = 0;
             this.TabbedNotepad.ShowToolTips = true;
-            this.TabbedNotepad.Size = new System.Drawing.Size(880, 409);
+            this.TabbedNotepad.Size = new System.Drawing.Size(834, 437);
             this.TabbedNotepad.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.TabbedNotepad.TabIndex = 6;
             this.TabbedNotepad.TabStop = false;
@@ -674,17 +742,25 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Enabled = false;
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.optionsToolStripMenuItem.Text = "Options";
+            // 
             // XMLEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(880, 483);
+            this.ClientSize = new System.Drawing.Size(834, 511);
             this.Controls.Add(this.TabbedNotepad);
             this.Controls.Add(this.TopToolStrip);
             this.Controls.Add(this.MenuStrip);
             this.Controls.Add(this.BottomToolStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.MenuStrip;
+            this.MinimumSize = new System.Drawing.Size(485, 260);
             this.Name = "XMLEdit";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "XMLEdit";
@@ -767,6 +843,14 @@
         private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem incrementalSearchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem validationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem wellFormedCheckToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem xSDValidationCheckToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripButton wellFormedButton;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
     }
 }
 

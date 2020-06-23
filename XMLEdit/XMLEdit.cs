@@ -5,7 +5,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace XMLEdit
 {
@@ -20,6 +22,8 @@ namespace XMLEdit
 
         Font _globalFont;
         Theme _globalTheme;
+
+        Thread validationThread = new Thread(() => { });
 
         public XMLEdit()
         {
@@ -292,6 +296,38 @@ namespace XMLEdit
             }
         }
 
+        private bool IsXmlWellFormed(string rawXml, bool runSilently = false, bool updateToolbar = false)
+        {
+            using (XmlReader xr = XmlReader.Create(new StringReader(rawXml)))
+            {
+                try
+                {
+                    while (xr.Read()) { }
+                    if (!runSilently)
+                    {
+                        Console.WriteLine("XML Well-Formed: Pass");
+                        MessageBox.Show("XML is well-formed!", "XML Well-Formed Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    if (updateToolbar)
+                        wellFormedButton.Text = "Well-Formed: Pass";
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    if (!runSilently)
+                    {
+                        Console.WriteLine("Fail: " + ex.Message);
+                        MessageBox.Show(String.Format("XML is NOT well-formed!\n\n{0}", ex.Message), "XML Well-Formed Check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    if (updateToolbar)
+                        wellFormedButton.Text = "Well-Formed: Fail";
+
+                }
+                return false;
+            }
+        }
+
         #endregion
         #region MenuToolStrip
 
@@ -432,6 +468,11 @@ namespace XMLEdit
             }
         }
 
+        private void wellFormedButton_Click(object sender, EventArgs e)
+        {
+            wellFormedCheckToolStripMenuItem_Click(sender, e);
+        }
+
         private void ZoomLevel_Click(object sender, EventArgs e)
         {
             NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
@@ -470,6 +511,20 @@ namespace XMLEdit
                 _aboutForm.BringToFront();
             else
                 _aboutForm.Show();
+        }
+
+        private void wellFormedCheckToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            IsXmlWellFormed(npPage.TextboxText);
+        }
+
+        private void viewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            TreeViewForm xmlTreeView = new TreeViewForm(ref npPage);
+
+            xmlTreeView.Show();
         }
 
         #endregion
@@ -560,6 +615,7 @@ namespace XMLEdit
         {
             try
             {
+                // This needs refactoring. Too many if-else statements.
                 if (TabbedNotepad.TabCount == 0) NewToolStripMenuItem_Click(sender, e);
 
                 NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
@@ -633,6 +689,13 @@ namespace XMLEdit
                     SetEncodingToolStripMenuItem_Click(ASCIIToolStripMenuItem, e);
                 else if (npPage.Encoding == Encoding.UTF8 && !UTF8ToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(UTF8ToolStripMenuItem, e);
+
+                if (validationThread.ThreadState != ThreadState.Running)
+                {
+                    string rawXML = npPage.TextboxText;
+                    validationThread = new Thread(() => IsXmlWellFormed(rawXML, true, true));
+                    validationThread.Start();
+                }
             }
             catch { }
         }
@@ -642,6 +705,7 @@ namespace XMLEdit
             base.OnFormClosing(e);
 
             if (e.CloseReason == CloseReason.WindowsShutDown) return;
+            if (!CloseAllTabs()) e.Cancel = true; //Program currently does not 'cache' open files in a seperate directory to allow unsaved files to remain open.
 
             _aboutForm.Dispose();
             this.Dispose();

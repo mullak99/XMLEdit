@@ -29,26 +29,15 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
-            this.logoXMLEdit = new System.Windows.Forms.PictureBox();
             this.nameLabel = new System.Windows.Forms.Label();
             this.versionLabel = new System.Windows.Forms.Label();
             this.aboutLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.homeLinkLabel = new System.Windows.Forms.LinkLabel();
             this.authorLabel = new System.Windows.Forms.Label();
+            this.logoXMLEdit = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.logoXMLEdit)).BeginInit();
             this.SuspendLayout();
-            // 
-            // logoXMLEdit
-            // 
-            this.logoXMLEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.logoXMLEdit.Image = global::XMLEdit.Properties.Resources.XmlEdit_Icon;
-            this.logoXMLEdit.Location = new System.Drawing.Point(6, 6);
-            this.logoXMLEdit.Name = "logoXMLEdit";
-            this.logoXMLEdit.Size = new System.Drawing.Size(100, 100);
-            this.logoXMLEdit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.logoXMLEdit.TabIndex = 0;
-            this.logoXMLEdit.TabStop = false;
             // 
             // nameLabel
             // 
@@ -90,10 +79,10 @@
             this.homeLinkLabel.AutoSize = true;
             this.homeLinkLabel.Location = new System.Drawing.Point(45, 114);
             this.homeLinkLabel.Name = "homeLinkLabel";
-            this.homeLinkLabel.Size = new System.Drawing.Size(232, 13);
+            this.homeLinkLabel.Size = new System.Drawing.Size(187, 13);
             this.homeLinkLabel.TabIndex = 5;
             this.homeLinkLabel.TabStop = true;
-            this.homeLinkLabel.Text = "https://gitlab.mullak99.co.uk/mullak99/xmledit/";
+            this.homeLinkLabel.Text = "https://github.com/mullak99/XMLEdit";
             this.homeLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.homeLinkLabel_LinkClicked);
             // 
             // authorLabel
@@ -104,6 +93,17 @@
             this.authorLabel.Size = new System.Drawing.Size(138, 13);
             this.authorLabel.TabIndex = 6;
             this.authorLabel.Text = "by Kallum Blakey (mullak99)";
+            // 
+            // logoXMLEdit
+            // 
+            this.logoXMLEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.logoXMLEdit.Image = global::XMLEdit.Properties.Resources.XmlEdit_Icon;
+            this.logoXMLEdit.Location = new System.Drawing.Point(6, 6);
+            this.logoXMLEdit.Name = "logoXMLEdit";
+            this.logoXMLEdit.Size = new System.Drawing.Size(100, 100);
+            this.logoXMLEdit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.logoXMLEdit.TabIndex = 0;
+            this.logoXMLEdit.TabStop = false;
             // 
             // AboutForm
             // 

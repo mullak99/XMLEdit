@@ -74,6 +74,12 @@
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Notepad.cs" />
+    <Compile Include="TreeViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TreeViewForm.Designer.cs">
+      <DependentUpon>TreeViewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserThemes.cs" />
     <Compile Include="XMLEdit.cs">
       <SubType>Form</SubType>
@@ -85,6 +91,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TreeViewForm.resx">
+      <DependentUpon>TreeViewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="XMLEdit.resx">
       <DependentUpon>XMLEdit.cs</DependentUpon>
