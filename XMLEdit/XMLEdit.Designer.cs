@@ -85,6 +85,8 @@
             this.ZoomLevel = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.wellFormedButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.fileTypeLabel = new System.Windows.Forms.ToolStripLabel();
             this.TopToolStrip = new System.Windows.Forms.ToolStrip();
             this.NewToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.OpenToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -102,8 +104,9 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
-            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.fileTypeLabel = new System.Windows.Forms.ToolStripLabel();
+            this.xmlSpecificToolSeperator = new System.Windows.Forms.ToolStripSeparator();
+            this.xsdSchemaButton = new System.Windows.Forms.ToolStripButton();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -235,7 +238,7 @@
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
@@ -244,20 +247,20 @@
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(171, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.CutToolStripMenuItem_Click);
             // 
@@ -265,7 +268,7 @@
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
             // 
@@ -273,7 +276,7 @@
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItem_Click);
             // 
@@ -281,7 +284,7 @@
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
@@ -289,7 +292,7 @@
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
             this.selectAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllToolStripMenuItem.Text = "Select All";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.SelectAllToolStripMenuItem_Click);
             // 
@@ -367,7 +370,7 @@
             // FontToolStripMenuItem
             // 
             this.FontToolStripMenuItem.Name = "FontToolStripMenuItem";
-            this.FontToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.FontToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FontToolStripMenuItem.Text = "Font...";
             this.FontToolStripMenuItem.Click += new System.EventHandler(this.FontToolStripMenuItem_Click);
             // 
@@ -378,7 +381,7 @@
             this.ASCIIToolStripMenuItem,
             this.UTF8ToolStripMenuItem});
             this.EncodingToolStripMenuItem.Name = "EncodingToolStripMenuItem";
-            this.EncodingToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.EncodingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.EncodingToolStripMenuItem.Text = "Encoding";
             // 
             // ANSIToolStripMenuItem
@@ -416,14 +419,14 @@
             // themeToolStripMenuItem
             // 
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.themeToolStripMenuItem.Text = "Theme";
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Enabled = false;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             // 
             // toolsToolStripMenuItem
@@ -454,10 +457,10 @@
             // 
             // xSDValidationCheckToolStripMenuItem
             // 
-            this.xSDValidationCheckToolStripMenuItem.Enabled = false;
             this.xSDValidationCheckToolStripMenuItem.Name = "xSDValidationCheckToolStripMenuItem";
             this.xSDValidationCheckToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.xSDValidationCheckToolStripMenuItem.Text = "XSD Validation Check";
+            this.xSDValidationCheckToolStripMenuItem.Click += new System.EventHandler(this.xsdValidationCheckToolStripMenuItem_Click);
             // 
             // showXmlTreeToolStripMenuItem
             // 
@@ -485,7 +488,7 @@
             // aboutXMLEditToolStripMenuItem
             // 
             this.aboutXMLEditToolStripMenuItem.Name = "aboutXMLEditToolStripMenuItem";
-            this.aboutXMLEditToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.aboutXMLEditToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutXMLEditToolStripMenuItem.Text = "About XMLEdit";
             this.aboutXMLEditToolStripMenuItem.Click += new System.EventHandler(this.AboutXMLEditToolStripMenuItem_Click);
             // 
@@ -506,7 +509,9 @@
             this.toolStripSeparator10,
             this.wellFormedButton,
             this.toolStripSeparator11,
-            this.fileTypeLabel});
+            this.fileTypeLabel,
+            this.xmlSpecificToolSeperator,
+            this.xsdSchemaButton});
             this.BottomToolStrip.Location = new System.Drawing.Point(0, 486);
             this.BottomToolStrip.Name = "BottomToolStrip";
             this.BottomToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -583,6 +588,19 @@
             this.wellFormedButton.Text = "Well-Formed: Unknown";
             this.wellFormedButton.ToolTipText = "Click for more information";
             this.wellFormedButton.Click += new System.EventHandler(this.wellFormedButton_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            // 
+            // fileTypeLabel
+            // 
+            this.fileTypeLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.fileTypeLabel.Name = "fileTypeLabel";
+            this.fileTypeLabel.Size = new System.Drawing.Size(31, 22);
+            this.fileTypeLabel.Text = "XML";
             // 
             // TopToolStrip
             // 
@@ -762,18 +780,26 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
-            // toolStripSeparator11
+            // xmlSpecificToolSeperator
             // 
-            this.toolStripSeparator11.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            this.xmlSpecificToolSeperator.Name = "xmlSpecificToolSeperator";
+            this.xmlSpecificToolSeperator.Size = new System.Drawing.Size(6, 25);
             // 
-            // fileTypeLabel
+            // xsdSchemaButton
             // 
-            this.fileTypeLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.fileTypeLabel.Name = "fileTypeLabel";
-            this.fileTypeLabel.Size = new System.Drawing.Size(31, 22);
-            this.fileTypeLabel.Text = "XML";
+            this.xsdSchemaButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.xsdSchemaButton.Image = ((System.Drawing.Image)(resources.GetObject("xsdSchemaButton.Image")));
+            this.xsdSchemaButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.xsdSchemaButton.Name = "xsdSchemaButton";
+            this.xsdSchemaButton.Size = new System.Drawing.Size(121, 22);
+            this.xsdSchemaButton.Tag = "";
+            this.xsdSchemaButton.Text = "XSD Schema: Not set";
+            this.xsdSchemaButton.ToolTipText = "Click for more information";
+            this.xsdSchemaButton.Click += new System.EventHandler(this.xsdSchemaButton_Click);
+            // 
+            // backgroundWorker
+            // 
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             // 
             // XMLEdit
             // 
@@ -880,6 +906,9 @@
         private System.Windows.Forms.ToolStripMenuItem openConverterToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripLabel fileTypeLabel;
+        private System.Windows.Forms.ToolStripSeparator xmlSpecificToolSeperator;
+        private System.Windows.Forms.ToolStripButton xsdSchemaButton;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
     }
 }
 

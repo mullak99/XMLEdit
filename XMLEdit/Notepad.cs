@@ -9,6 +9,8 @@ using ScintillaNET;
 using AutocompleteMenuNS;
 using ScintillaNET_FindReplaceDialog;
 using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Linq;
 
 namespace XMLEdit
 {
@@ -21,7 +23,7 @@ namespace XMLEdit
         private Theme _theme = null;
         private Font _font = null;
 
-        private string _fileName, _filePath;
+        private string _fileName, _filePath, _xsdPath;
         private bool _switchToNewTab;
         private FileType _fileType = FileType.NULL;
 
@@ -348,6 +350,12 @@ namespace XMLEdit
             set { _scintillaText.Zoom = value; }
         }
 
+        public string XSDSchema
+        {
+            get { return _xsdPath; }
+            set { _xsdPath = value; }
+        }
+
         public void Cut()
         {
             _scintillaText.Cut();
@@ -394,8 +402,51 @@ namespace XMLEdit
             }
             else
             {
-                exception = new FileLoadException("Not an XML file");
+                exception = new FileLoadException("This is not an XML file!");
                 return false;
+            }
+        }
+
+        public bool IsXmlValidWithSchema(out Exception exception)
+        {
+            if (_fileType == FileType.XML)
+            {
+                if (File.Exists(_xsdPath))
+                {
+                    try
+                    {
+                        XmlSchemaSet schema = new XmlSchemaSet();
+                        schema.Add(null, _xsdPath);
+                        XDocument doc = XDocument.Parse(this.TextboxText);
+                        doc.Validate(schema, ValidationEventHandler);
+                        exception = null;
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                        return false;
+                    }
+                }
+                else
+                {
+                    exception = new FileLoadException("The specified XSD files could not be found!");
+                    return false;
+                }
+            }
+            else
+            {
+                exception = new FileLoadException("This is not an XML file!");
+                return false;
+            }
+        }
+
+        public static void ValidationEventHandler(object sender, ValidationEventArgs e)
+        {
+            XmlSeverityType type = XmlSeverityType.Warning;
+            if (Enum.TryParse<XmlSeverityType>("Error", out type))
+            {
+                if (type == XmlSeverityType.Error) throw new Exception(e.Message);
             }
         }
 
@@ -496,6 +547,12 @@ namespace XMLEdit
                 UpdateFilePath();
 
                 _scintillaText.Text = File.ReadAllText(_filePath, _textEncoding);
+
+                string autoXsdLoadPath = Path.ChangeExtension(_filePath, "xsd");
+                if (Path.GetExtension(path) == ".xml" && File.Exists(autoXsdLoadPath))
+                {
+                    _xsdPath = autoXsdLoadPath;
+                }
 
                 Focus();
 
