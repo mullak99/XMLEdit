@@ -5,6 +5,7 @@
       ScintillaNET
       AutocompleteMenu-ScintillaNET
       ScintillaNET_FindReplaceDialog
+      Newtonsoft.Json
     </IncludeAssemblies>
   </Costura>
 </Weavers>
