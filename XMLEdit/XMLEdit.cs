@@ -875,7 +875,7 @@ namespace XMLEdit
 
                 XmlSpecificToolsCheck(npPage);
 
-                Thread.SpinWait(100);
+                Thread.Sleep(500);
             }
         }
 
