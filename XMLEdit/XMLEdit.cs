@@ -324,14 +324,22 @@ namespace XMLEdit
             {
                 case FileType.XML:
                     fileTypeLabel.Text = "XML";
+                    fileTypeLabel.ToolTipText = "Extensible Markup Language";
                     showXmlSpecificTools = true;
                     break;
                 case FileType.JSON:
                     fileTypeLabel.Text = "JSON";
+                    fileTypeLabel.ToolTipText = "JavaScript Object Notation";
+                    showXmlSpecificTools = false;
+                    break;
+                case FileType.YAML:
+                    fileTypeLabel.Text = "YAML";
+                    fileTypeLabel.ToolTipText = "YAML Ain't Markup Language";
                     showXmlSpecificTools = false;
                     break;
                 default:
                     fileTypeLabel.Text = "";
+                    fileTypeLabel.ToolTipText = "";
                     showXmlSpecificTools = false;
                     break;
             }
