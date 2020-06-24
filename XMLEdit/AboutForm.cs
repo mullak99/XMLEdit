@@ -25,7 +25,7 @@ namespace XMLEdit
         {
             try
             {
-                Process.Start("https://gitlab.mullak99.co.uk/mullak99/xmledit/");
+                Process.Start("https://github.com/mullak99/XMLEdit");
             }
             catch { }
         }

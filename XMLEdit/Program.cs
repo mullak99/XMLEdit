@@ -18,7 +18,7 @@ namespace XMLEdit
 
             foreach (string arg in args)
             {
-                if (File.Exists(arg) && Path.GetExtension(arg) == ".xml")
+                if (File.Exists(arg) && (Path.GetExtension(arg).ToLower() == ".xml" || Path.GetExtension(arg).ToLower() == ".json"))
                 {
                     filePaths.Add(arg);
                 }
