@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ScintillaNET;
 using AutocompleteMenuNS;
 using ScintillaNET_FindReplaceDialog;
+using System.Xml;
 
 namespace XMLEdit
 {
@@ -22,8 +23,11 @@ namespace XMLEdit
 
         private string _fileName, _filePath;
         private bool _switchToNewTab;
+        private FileType _fileType = FileType.NULL;
 
         private const int MaxTabTitleLength = 11;
+
+        private const string SupportedFileFilter = "All supported files (*.xml, *.json)|*.xml;*.json|XML Files (*.xml)|*.xml|JSON Files (*.json)|*.json";
 
         public NotepadPage(string fileName, Font font, Theme theme, bool switchToNewTab = true, string filePath = null)
         {
@@ -32,6 +36,11 @@ namespace XMLEdit
             _switchToNewTab = switchToNewTab;
             _font = font;
             _theme = theme;
+
+            if (!String.IsNullOrWhiteSpace(_filePath))
+            {
+                AutomaticallyDetermineFiletype();
+            }
 
             _scintillaText = new Scintilla();
             _scintillaText.Dock = DockStyle.Fill;
@@ -104,6 +113,20 @@ namespace XMLEdit
                 this.ToolTipText = _fileName;
         }
 
+        private void AutomaticallyDetermineLexer()
+        {
+            switch (_fileType)
+            {
+                case FileType.XML:
+                    _scintillaText.Lexer = Lexer.Xml;
+                    break;
+                case FileType.JSON:
+                    _scintillaText.Lexer = Lexer.Json;
+                    _scintillaText.Colorize(0, _scintillaText.TextLength);
+                    break;
+            }
+        }
+
         private void ApplyTheme(Theme theme)
         {
             if (_theme != theme) _theme = theme;
@@ -116,8 +139,8 @@ namespace XMLEdit
             _scintillaText.Styles[Style.Default].Bold = _font.Bold;
             _scintillaText.StyleClearAll();
 
-            // Set the XML Lexer
-            _scintillaText.Lexer = Lexer.Xml;
+            // Set the Lexer
+            AutomaticallyDetermineLexer();
 
             // Show line numbers
             _scintillaText.Margins[0].Width = 25;
@@ -197,6 +220,27 @@ namespace XMLEdit
             _scintillaText.Styles[Style.BraceLight].ForeColor = theme.BraceGoodColor;
             _scintillaText.Styles[Style.BraceBad].ForeColor = theme.BraceGoodColor;
 
+            _scintillaText.Styles[Style.Json.Default].ForeColor = theme.StandardTextColor;
+            _scintillaText.Styles[Style.Json.Default].BackColor = theme.StandardBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.BlockComment].ForeColor = theme.XmlSingleStringTextColor;
+            _scintillaText.Styles[Style.Json.BlockComment].BackColor = theme.XmlSingleStringBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.LineComment].ForeColor = theme.XmlTagTextColor;
+            _scintillaText.Styles[Style.Json.LineComment].BackColor = theme.XmlTagBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.Number].ForeColor = theme.LineNumberTextColor;
+            _scintillaText.Styles[Style.Json.Number].BackColor = theme.LineNumberBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.PropertyName].ForeColor = theme.XmlEntityTextColor;
+            _scintillaText.Styles[Style.Json.PropertyName].BackColor = theme.XmlEntityBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.String].ForeColor = theme.StandardTextColor;
+            _scintillaText.Styles[Style.Json.String].BackColor = theme.StandardBackgroundColor;
+
+            _scintillaText.Styles[Style.Json.Operator].ForeColor = theme.XmlTagEndTextColor;
+            _scintillaText.Styles[Style.Json.Operator].BackColor = theme.XmlTagEndBackgroundColor;
+
             _scintillaText.SetFoldMarginHighlightColor(true, theme.FolderMarkerHighlightColor);
             _scintillaText.SetFoldMarginColor(true, theme.FolderMarkerBackgroundColor);
 
@@ -250,6 +294,17 @@ namespace XMLEdit
         public string FilePath
         {
             get { return _filePath; }
+            set
+            {
+                _filePath = value;
+                AutomaticallyDetermineFiletype();
+                AutomaticallyDetermineLexer();
+            }
+        }
+
+        public FileType GetFileType
+        {
+            get { return _fileType; }
         }
 
         public string TabTitle
@@ -318,6 +373,32 @@ namespace XMLEdit
             _scintillaText.SelectAll();
         }
 
+        public bool IsXmlWellFormed(out Exception exception)
+        {
+            if (_fileType == FileType.XML)
+            {
+                using (XmlReader xr = XmlReader.Create(new StringReader(this.TextboxText)))
+                {
+                    try
+                    {
+                        while (xr.Read()) { }
+                        exception = null;
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                exception = new FileLoadException("Not an XML file");
+                return false;
+            }
+        }
+
         public LineCollection Lines
         {
             get { return _scintillaText.Lines; }
@@ -357,16 +438,18 @@ namespace XMLEdit
 
                 File.WriteAllText(_filePath, this.TextboxText, _textEncoding);
 
+                AutomaticallyDetermineFiletype();
+                AutomaticallyDetermineLexer();
                 return true;
             }
-            else return SaveAs();
+            return SaveAs();
         }
 
         public bool SaveAs()
         {
             SaveFileDialog saveFileDiag = new SaveFileDialog();
             saveFileDiag.Title = "Save File As";
-            saveFileDiag.Filter = "XML Files (*.xml)|*.xml";
+            saveFileDiag.Filter = SupportedFileFilter;
 
             if (saveFileDiag.ShowDialog() == DialogResult.OK)
             {
@@ -380,6 +463,8 @@ namespace XMLEdit
 
                 File.WriteAllText(_filePath, this.TextboxText, _textEncoding);
 
+                AutomaticallyDetermineFiletype();
+                AutomaticallyDetermineLexer();
                 return true;
             }
             return false;
@@ -389,17 +474,19 @@ namespace XMLEdit
         {
             OpenFileDialog openFileDiag = new OpenFileDialog();
             openFileDiag.Title = "Open File";
-            openFileDiag.Filter = "XML Files (*.xml)|*.xml";
+            openFileDiag.Filter = SupportedFileFilter;
 
             if (openFileDiag.ShowDialog() == DialogResult.OK)
                 return Open(openFileDiag.FileName);
 
+            AutomaticallyDetermineFiletype();
+            AutomaticallyDetermineLexer();
             return false;
         }
 
         public bool Open(string path)
         {
-            if (Path.GetExtension(path) == ".xml")
+            if (Path.GetExtension(path) == ".xml" || Path.GetExtension(path) == ".json")
             {
                 _fileName = Path.GetFileName(path);
                 _filePath = Path.GetFullPath(path);
@@ -413,6 +500,7 @@ namespace XMLEdit
                 Focus();
 
                 _scintillaText.SetSavePoint();
+                AutomaticallyDetermineFiletype();
                 return true;
             }
             return false;
@@ -433,6 +521,26 @@ namespace XMLEdit
                     return true;
             }
             return false;
+        }
+
+        private void AutomaticallyDetermineFiletype()
+        {
+            try
+            {
+                switch (Path.GetExtension(_filePath).ToUpper())
+                {
+                    case ".XML":
+                        _fileType = FileType.XML;
+                        return;
+                    case ".JSON":
+                        _fileType = FileType.JSON;
+                        return;
+                    default:
+                        _fileType = FileType.NULL;
+                        return;
+                }
+            }
+            catch { }
         }
 
         int lastCaretPos = 0;
@@ -468,6 +576,7 @@ namespace XMLEdit
                     _scintillaText.BraceHighlight(Scintilla.InvalidPosition, Scintilla.InvalidPosition);
                 }
             }
+            AutomaticallyDetermineLexer();
         }
     }
 

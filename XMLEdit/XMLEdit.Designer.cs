@@ -65,11 +65,13 @@
             this.UTF8ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wellFormedCheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.xSDValidationCheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showXmlTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutXMLEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStrip = new System.Windows.Forms.ToolStrip();
@@ -100,7 +102,8 @@
             this.FontToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Runtime = new System.Windows.Forms.Timer(this.components);
             this.TabbedNotepad = new System.Windows.Forms.TabControl();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.fileTypeLabel = new System.Windows.Forms.ToolStripLabel();
             this.MenuStrip.SuspendLayout();
             this.BottomToolStrip.SuspendLayout();
             this.TopToolStrip.SuspendLayout();
@@ -413,14 +416,22 @@
             // themeToolStripMenuItem
             // 
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.themeToolStripMenuItem.Text = "Theme";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Enabled = false;
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.optionsToolStripMenuItem.Text = "Options";
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.validationToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.showXmlTreeToolStripMenuItem,
+            this.openConverterToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -448,13 +459,20 @@
             this.xSDValidationCheckToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.xSDValidationCheckToolStripMenuItem.Text = "XSD Validation Check";
             // 
-            // viewToolStripMenuItem
+            // showXmlTreeToolStripMenuItem
             // 
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.viewToolStripMenuItem.Text = "Show XML Tree";
-            this.viewToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
+            this.showXmlTreeToolStripMenuItem.Name = "showXmlTreeToolStripMenuItem";
+            this.showXmlTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.showXmlTreeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.showXmlTreeToolStripMenuItem.Text = "Show XML Tree";
+            this.showXmlTreeToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
+            // 
+            // openConverterToolStripMenuItem
+            // 
+            this.openConverterToolStripMenuItem.Name = "openConverterToolStripMenuItem";
+            this.openConverterToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.openConverterToolStripMenuItem.Text = "Open File Converter";
+            this.openConverterToolStripMenuItem.Click += new System.EventHandler(this.openConverterToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -486,7 +504,9 @@
             this.toolStripSeparator9,
             this.ZoomLevel,
             this.toolStripSeparator10,
-            this.wellFormedButton});
+            this.wellFormedButton,
+            this.toolStripSeparator11,
+            this.fileTypeLabel});
             this.BottomToolStrip.Location = new System.Drawing.Point(0, 486);
             this.BottomToolStrip.Name = "BottomToolStrip";
             this.BottomToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -742,12 +762,18 @@
             this.TabbedNotepad.Click += new System.EventHandler(this.TabbedNotepad_Click);
             this.TabbedNotepad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabbedNotepad_MouseDown);
             // 
-            // optionsToolStripMenuItem
+            // toolStripSeparator11
             // 
-            this.optionsToolStripMenuItem.Enabled = false;
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.optionsToolStripMenuItem.Text = "Options";
+            this.toolStripSeparator11.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            // 
+            // fileTypeLabel
+            // 
+            this.fileTypeLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.fileTypeLabel.Name = "fileTypeLabel";
+            this.fileTypeLabel.Size = new System.Drawing.Size(31, 22);
+            this.fileTypeLabel.Text = "XML";
             // 
             // XMLEdit
             // 
@@ -847,10 +873,13 @@
         private System.Windows.Forms.ToolStripMenuItem validationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wellFormedCheckToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem xSDValidationCheckToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showXmlTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripButton wellFormedButton;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openConverterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+        private System.Windows.Forms.ToolStripLabel fileTypeLabel;
     }
 }
 

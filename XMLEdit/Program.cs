@@ -9,7 +9,7 @@ namespace XMLEdit
     static class Program
     {
         private const bool IsPreReleaseBuild = true;
-        private const string PreReleaseTag = "DEV_200623-1";
+        private const string PreReleaseTag = "DEV_200624-1";
                
         [STAThread]
         static void Main(string[] args)
@@ -31,9 +31,9 @@ namespace XMLEdit
         }
 
         /// <summary>
-        /// Used to get the current version of SSM
+        /// Used to get the current version of XMLEdit
         /// </summary>
-        /// <returns>The version number of SSM</returns>
+        /// <returns>The version number of XMLEdit</returns>
         public static string GetVersion()
         {
             #pragma warning disable CS0162 //Unreachable code detected

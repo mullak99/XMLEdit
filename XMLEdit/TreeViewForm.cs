@@ -6,7 +6,7 @@ namespace XMLEdit
 {
     public partial class TreeViewForm : Form
     {
-        NotepadPage xmlPage;
+        private NotepadPage _xmlPage;
 
         public TreeViewForm()
         {
@@ -15,7 +15,7 @@ namespace XMLEdit
 
         public TreeViewForm(ref NotepadPage npPage) : this()
         {
-            xmlPage = npPage;
+            _xmlPage = npPage;
 
             this.Text = npPage.FileName + " | Tree View";
             InitialiseTree();
@@ -27,7 +27,7 @@ namespace XMLEdit
             {
                 XmlDataDocument xmldoc = new XmlDataDocument();
                 XmlNode xmlnode;
-                xmldoc.LoadXml(xmlPage.TextboxText);
+                xmldoc.LoadXml(_xmlPage.TextboxText);
                 xmlnode = xmldoc.ChildNodes[1];
                 treeView.Nodes.Clear();
                 treeView.Nodes.Add(new TreeNode(xmldoc.DocumentElement.Name));

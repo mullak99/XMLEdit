@@ -24,6 +24,7 @@ namespace XMLEdit
         Theme _globalTheme;
 
         Thread validationThread = new Thread(() => { });
+        bool showXmlSpecificTools = false;
 
         public XMLEdit()
         {
@@ -170,12 +171,17 @@ namespace XMLEdit
             if (TabbedNotepad.TabCount > 0) TabbedNotepad.SelectedIndex = (TabbedNotepad.TabCount - 1);
         }
 
-        private void AddTab(NotepadPage notepadPage, bool skipAdd = false)
+        private void AddTab(NotepadPage npPage, bool skipAdd = false)
         {
-            if (!skipAdd) TabbedNotepad.Controls.Add(notepadPage);
-            notepadPage.Focus();
+            if (!skipAdd) TabbedNotepad.Controls.Add(npPage);
+            npPage.Focus();
 
             CacheOpenFiles();
+        }
+
+        public void OpenTab(string path)
+        {
+            OpenTab(path, true);
         }
 
         private void OpenTab(string path = null, bool requirePath = false)
@@ -183,22 +189,24 @@ namespace XMLEdit
             if ((!String.IsNullOrWhiteSpace(path) && File.Exists(path)) || String.IsNullOrWhiteSpace(path) && !requirePath)
             {
                 NotepadPage notepadPage;
+                NotepadPage selectedNpPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
                 string oldTabFileName = "";
                 bool skipAdd = false;
 
-                if ((TabbedNotepad.Controls.Count > 0 && !String.IsNullOrWhiteSpace(TabbedNotepad.Controls[TabbedNotepad.SelectedIndex].Text)) || TabbedNotepad.Controls.Count == 0)
-                    notepadPage = new NotepadPage("", _globalFont, _globalTheme);
+                if ((TabbedNotepad.Controls.Count > 0 && (!String.IsNullOrEmpty(selectedNpPage.TextboxText) || !String.IsNullOrEmpty(selectedNpPage.FilePath))) || TabbedNotepad.Controls.Count == 0)
+                    notepadPage = new NotepadPage("", _globalFont, _globalTheme, true, path);
                 else
                 {
                     NotepadPage lastNotepadPage = TabbedNotepad.Controls[TabbedNotepad.Controls.Count - 1] as NotepadPage;
                     oldTabFileName = lastNotepadPage.FileName;
                     notepadPage = lastNotepadPage;
+                    notepadPage.FilePath = path;
                     skipAdd = true;
                 }
 
                 bool opened;
                 if (String.IsNullOrWhiteSpace(path)) opened = notepadPage.Open();
-                else opened = notepadPage.Open(path);
+                else opened = notepadPage.Open(Path.GetFullPath(path));
 
                 if (opened)
                 {
@@ -218,9 +226,16 @@ namespace XMLEdit
 
                 if (notepadPages[index].Saved)
                 {
+
                     if (TabbedNotepad.TabCount > 1 || !String.IsNullOrEmpty(notepadPages[index].TextboxText))
                     {
                         ForceRemoveTabAt(index);
+                        ret = true;
+                    }
+                    else if (TabbedNotepad.TabCount == 1)
+                    {
+                        ForceRemoveTabAt(index);
+                        OpenTab();
                         ret = true;
                     }
                 }
@@ -250,12 +265,12 @@ namespace XMLEdit
         private bool CloseAllTabs()
         {
             bool didAllClose = true;
-            NotepadPage[] notepadPages = TabbedNotepad.Controls.OfType<NotepadPage>().ToArray();
-            NotepadPage[] tempPages = notepadPages;
+            NotepadPage[] npPages = TabbedNotepad.Controls.OfType<NotepadPage>().ToArray();
+            NotepadPage[] tempPages = npPages;
 
             foreach (NotepadPage npPage in tempPages)
             {
-                if (!CloseTabAt(Array.IndexOf(notepadPages, npPage)) && !npPage.Saved)
+                if (!CloseTabAt(Array.IndexOf(npPages, npPage)) && !npPage.Saved)
                     didAllClose = false;
             }
             return didAllClose;
@@ -285,7 +300,10 @@ namespace XMLEdit
 
         private void TabbedNotepad_TabIndexChanged(object sender, EventArgs e)
         {
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+
             Runtime_Tick(sender, e);
+            XmlSpecificToolsCheck(npPage);
         }
 
         private void TabbedNotepad_Click(object sender, EventArgs e)
@@ -296,7 +314,27 @@ namespace XMLEdit
             }
         }
 
-        private bool IsXmlWellFormed(string rawXml, bool runSilently = false, bool updateToolbar = false)
+        private void XmlSpecificToolsCheck(NotepadPage npPage)
+        {
+            switch (npPage.GetFileType)
+            {
+                case FileType.XML:
+                    fileTypeLabel.Text = "XML";
+                    showXmlSpecificTools = true;
+                    return;
+                case FileType.JSON:
+                    fileTypeLabel.Text = "JSON";
+                    showXmlSpecificTools = false;
+                    return;
+                default:
+                    fileTypeLabel.Text = "";
+                    showXmlSpecificTools = false;
+                    return;
+            }
+        }
+
+        
+        private bool Legacy_IsXmlWellFormed(string rawXml, bool runSilently = false, bool updateToolbar = false)
         {
             using (XmlReader xr = XmlReader.Create(new StringReader(rawXml)))
             {
@@ -326,6 +364,27 @@ namespace XMLEdit
                 }
                 return false;
             }
+        }
+
+        private bool IsXmlWellFormed(NotepadPage npPage, bool runningInBackground)
+        {
+            if (npPage.GetFileType == FileType.XML)
+            {
+                Exception exception;
+                bool isWellFormed = npPage.IsXmlWellFormed(out exception);
+                if (isWellFormed)
+                {
+                    if (!runningInBackground) MessageBox.Show("XML is well-formed!", "XML Well-Formed Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    wellFormedButton.Text = "Well-Formed: Pass";
+                }
+                else
+                {
+                    if (!runningInBackground) MessageBox.Show(String.Format("XML is NOT well-formed!\n\n{0}", exception.Message), "XML Well-Formed Check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    wellFormedButton.Text = "Well-Formed: Fail";
+                }
+                return isWellFormed;
+            }
+            return false;
         }
 
         #endregion
@@ -516,7 +575,7 @@ namespace XMLEdit
         private void wellFormedCheckToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
-            IsXmlWellFormed(npPage.TextboxText);
+            IsXmlWellFormed(npPage, false);
         }
 
         private void viewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -525,6 +584,14 @@ namespace XMLEdit
             TreeViewForm xmlTreeView = new TreeViewForm(ref npPage);
 
             xmlTreeView.Show();
+        }
+
+        private void openConverterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NotepadPage npPage = TabbedNotepad.Controls[TabbedNotepad.SelectedIndex] as NotepadPage;
+            FileConverter fileConverter = new FileConverter(ref npPage, this);
+
+            fileConverter.Show();
         }
 
         #endregion
@@ -646,28 +713,21 @@ namespace XMLEdit
                 string TabTitle, TabToolTip;
                 if (npPage.Saved)
                 {
-                    try
-                    {
-                        TabTitle = npPage.FileName.Substring(0, 11).TrimEnd(' ', '.') + "...";
-                    }
-                    catch
-                    {
+                    if (npPage.FileName.Length > 9)
+                        TabTitle = npPage.FileName.Substring(0, 9).TrimEnd(' ', '.') + "...";
+                    else
                         TabTitle = npPage.FileName;
-                    }
 
                     TabToolTip = npPage.FileName;
                     this.Text = String.Format("{0} - XMLEdit", npPage.FileName);
                 }
                 else
                 {
-                    try
-                    {
-                        TabTitle = ("(*) " + npPage.FileName).Substring(0, 11).TrimEnd(' ', '.') + "...";
-                    }
-                    catch
-                    {
+                    if (npPage.FileName.Length > 9)
+                        TabTitle = ("(*) " + npPage.FileName).Substring(0, 9).TrimEnd(' ', '.') + "...";
+                    else
                         TabTitle = ("(*) " + npPage.FileName);
-                    }
+
                     TabToolTip = "(Unsaved) " + npPage.FileName;
                     this.Text = String.Format("(*) {0} - XMLEdit", npPage.FileName);
                 }
@@ -690,12 +750,28 @@ namespace XMLEdit
                 else if (npPage.Encoding == Encoding.UTF8 && !UTF8ToolStripMenuItem.Checked)
                     SetEncodingToolStripMenuItem_Click(UTF8ToolStripMenuItem, e);
 
-                if (validationThread.ThreadState != ThreadState.Running)
+                XmlSpecificToolsCheck(npPage);
+
+                if (showXmlSpecificTools)
                 {
-                    string rawXML = npPage.TextboxText;
-                    validationThread = new Thread(() => IsXmlWellFormed(rawXML, true, true));
-                    validationThread.Start();
+                    if (validationThread.ThreadState != ThreadState.Running)
+                    {
+                        string rawXML = npPage.TextboxText;
+                        validationThread = new Thread(() => Legacy_IsXmlWellFormed(rawXML, true, true));
+                        validationThread.Start();
+                    }
+
+                    wellFormedButton.Visible = true;
+                    validationToolStripMenuItem.Enabled = true;
+                    showXmlTreeToolStripMenuItem.Enabled = true;
                 }
+                else
+                {
+                    wellFormedButton.Visible = false;
+                    validationToolStripMenuItem.Enabled = false;
+                    showXmlTreeToolStripMenuItem.Enabled = false;
+                }
+                
             }
             catch { }
         }
@@ -712,5 +788,13 @@ namespace XMLEdit
         }
 
         #endregion
+    }
+
+    public enum FileType
+    {
+        NULL = 0,
+        XML = 1,
+        JSON = 2,
+        YAML = 3
     }
 }

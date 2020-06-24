@@ -40,7 +40,7 @@
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.Location = new System.Drawing.Point(0, 0);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(364, 273);
+            this.treeView.Size = new System.Drawing.Size(334, 266);
             this.treeView.TabIndex = 0;
             // 
             // toolStrip1
@@ -48,9 +48,9 @@
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshXML});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 273);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 266);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(364, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(334, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -68,11 +68,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 298);
+            this.ClientSize = new System.Drawing.Size(334, 291);
             this.Controls.Add(this.treeView);
             this.Controls.Add(this.toolStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(200, 175);
             this.Name = "TreeViewForm";
             this.Text = "PLACEHOLDER | Tree View";
             this.TopMost = true;
