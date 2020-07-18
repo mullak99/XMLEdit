@@ -48,7 +48,7 @@ namespace XMLEdit.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("896, 522")]
+        [global::System.Configuration.DefaultSettingValueAttribute("850, 550")]
         public global::System.Drawing.Size appSize {
             get {
                 return ((global::System.Drawing.Size)(this["appSize"]));

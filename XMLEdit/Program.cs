@@ -8,8 +8,8 @@ namespace XMLEdit
 {
     static class Program
     {
-        private const bool IsPreReleaseBuild = true;
-        private const string PreReleaseTag = "DEV_200624-2";
+        private const bool IsPreReleaseBuild = false;
+        private const string PreReleaseTag = "R1";
                
         [STAThread]
         static void Main(string[] args)

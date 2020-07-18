@@ -79,7 +79,9 @@
     <Compile Include="FileConverter.Designer.cs">
       <DependentUpon>FileConverter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Notepad.cs" />
+    <Compile Include="Notepad.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TreeViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,6 +119,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="AllClassDiagram.cd" />
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>
