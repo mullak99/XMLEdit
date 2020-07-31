@@ -170,10 +170,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>themes\pureblack.xetheme</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Resources\verygreentest.xetheme">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>themes\verygreentest.xetheme</TargetPath>
-    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
